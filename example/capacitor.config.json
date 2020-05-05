@@ -1,0 +1,7 @@
+{
+  "appId": "com.equimaps.capacitorblobwriterexample",
+  "appName": "example",
+  "bundledWebRuntime": true,
+  "npmClient": "npm",
+  "webDir": "www"
+}

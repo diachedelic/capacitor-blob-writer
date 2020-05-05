@@ -1,0 +1,20 @@
+{
+  "name": "capacitor-app",
+  "version": "1.0.0",
+  "description": "An Amazing Capacitor App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "capacitor",
+    "mobile"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/cli": "^2.0.2",
+    "@capacitor/core": "^2.0.2",
+    "capacitor-blob-writer": "../"
+  }
+}
