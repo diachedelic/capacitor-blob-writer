@@ -6,5 +6,5 @@ xcuserdata
 .gradle
 .settings
 ios/Plugin/Pods
-android/capacitor-blob-writer/build
-android/capacitor-blob-writer/capacitor-firebase-auth.iml
+android/build
+android/capacitor-blob-writer.iml
