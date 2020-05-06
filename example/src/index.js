@@ -2,8 +2,7 @@ import { FilesystemDirectory, Capacitor } from '@capacitor/core';
 
 // import directly, instead of using Capacitor.Plugins
 // see https://capacitor.ionicframework.com/docs/plugins/js/
-import { BlobWriter } from '../../dist/plugin.mjs'
-const { writeFile } = new BlobWriter()
+import { writeFile } from '../../dist/plugin.mjs'
 
 const output = document.createElement('pre')
 document.body.innerHTML = ''
