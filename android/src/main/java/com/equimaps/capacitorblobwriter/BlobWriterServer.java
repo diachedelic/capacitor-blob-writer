@@ -8,20 +8,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.UUID;
 
 import fi.iki.elonen.NanoHTTPD;
 
 public class BlobWriterServer extends NanoHTTPD {
     private String logTag = null;
+    private File tmpDir = null;
 
-    public BlobWriterServer(int port, String logTag) {
+    public BlobWriterServer(int port, String logTag, File tmpDir) {
         super(port);
 
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
-
+        this.tmpDir = tmpDir;
         this.logTag = logTag;
     }
 
@@ -47,11 +45,9 @@ public class BlobWriterServer extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
-        Log.d(logTag, session.getMethod().toString() + session.getUri());
+        Log.d(logTag, session.getMethod().toString() + " " + session.getUri());
 
         if (session.getMethod() == Method.PUT) {
-            String path = session.getUri();
-            File file = new File(path);
             long contentLength;
 
             try {
@@ -63,16 +59,24 @@ public class BlobWriterServer extends NanoHTTPD {
                 return newCorsResponse(Response.Status.BAD_REQUEST, session);
             }
 
-            try {
-                // create file if it does not exist
-                file.createNewFile();
+            String destPath = session.getUri();
+            File destFile = new File(destPath);
+            if (destFile.isDirectory()) {
+                Log.e(logTag, "cannot write to directory");
+                return newCorsResponse(Response.Status.INTERNAL_ERROR, session);
+            }
 
-                // write input stream to file
+            try {
                 InputStream in = session.getInputStream();
                 OutputStream out = null;
 
+                // write input stream to temp file
+                String tmpName = UUID.randomUUID().toString();
+                File tmpFile = File.createTempFile(tmpName, null, tmpDir);
+                tmpFile.deleteOnExit();
+
                 try {
-                    out = new FileOutputStream(file);
+                    out = new FileOutputStream(tmpFile);
                     byte[] buf = new byte[1024];
                     int bytesRead;
                     long totalBytesRead = 0;
@@ -86,6 +90,12 @@ public class BlobWriterServer extends NanoHTTPD {
                     if (out != null) {
                         out.close();
                     }
+                }
+
+                // then move into place
+                if (!tmpFile.renameTo(destFile)) {
+                    Log.e(logTag, "failed to move file into place");
+                    return newCorsResponse(Response.Status.INTERNAL_ERROR, session);
                 }
             } catch (IOException ex) {
                 Log.e(logTag, "failed to write body stream to file", ex);
