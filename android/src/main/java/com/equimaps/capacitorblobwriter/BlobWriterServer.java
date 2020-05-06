@@ -15,12 +15,17 @@ import fi.iki.elonen.NanoHTTPD;
 public class BlobWriterServer extends NanoHTTPD {
     private String logTag = null;
     private File tmpDir = null;
+    private String authToken = UUID.randomUUID().toString();
 
     public BlobWriterServer(int port, String logTag, File tmpDir) {
         super(port);
 
         this.tmpDir = tmpDir;
         this.logTag = logTag;
+    }
+
+    public String getAuthToken() {
+        return authToken;
     }
 
     public Response newCorsResponse(Response.IStatus status, IHTTPSession session) {
@@ -48,6 +53,12 @@ public class BlobWriterServer extends NanoHTTPD {
         Log.d(logTag, session.getMethod().toString() + " " + session.getUri());
 
         if (session.getMethod() == Method.PUT) {
+            // ensure request is coming from the app
+            String auth = session.getHeaders().get("authorization");
+            if (!auth.equals(this.authToken)) {
+                return newCorsResponse(Response.Status.UNAUTHORIZED, session);
+            }
+
             long contentLength;
 
             try {

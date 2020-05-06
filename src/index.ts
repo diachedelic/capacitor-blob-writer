@@ -11,15 +11,21 @@ import { Plugins } from '@capacitor/core';
 
 export class BlobWriter implements BlobWriterPlugin {
   async writeFile(options: BlobWriteOptions): Promise<BlobWriteResult> {
-    const { baseUrl } = await Plugins.BlobWriter.getConfig();
-    const { uri } = await Plugins.Filesystem.getUri({
-      path: options.path,
-      directory: options.directory,
-    });
+    const [
+      { baseUrl, authToken },
+      { uri }
+    ] = await Promise.all([
+      Plugins.BlobWriter.getConfig(),
+      Plugins.Filesystem.getUri({
+        path: options.path,
+        directory: options.directory,
+      })
+    ])
 
     const absolutePath = uri.replace('file://', '');
 
     const { status } = await fetch(baseUrl + absolutePath, {
+      headers: { authorization: authToken },
       method: 'put',
       body: options.data,
     });
