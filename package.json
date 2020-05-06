@@ -2,12 +2,12 @@
   "name": "capacitor-blob-writer",
   "version": "0.0.1",
   "description": "Write javascript Blobs to the filesystem efficiently",
-  "main": "dist/esm/index.js",
-  "types": "dist/esm/index.d.ts",
+  "main": "dist/plugin.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && rollup -c",
     "clean": "rimraf ./dist",
-    "watch": "tsc --watch",
+    "watch": "rollup -cw",
     "prepublishOnly": "npm run build"
   },
   "author": "James Diacono",
@@ -16,10 +16,13 @@
     "@capacitor/core": "latest"
   },
   "devDependencies": {
-    "rimraf": "^3.0.0",
-    "typescript": "^3.2.4",
+    "@capacitor/android": "latest",
     "@capacitor/ios": "latest",
-    "@capacitor/android": "latest"
+    "rimraf": "^3.0.0",
+    "rollup": "^2.8.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.27.0",
+    "typescript": "^3.8.3"
   },
   "files": [
     "dist/",

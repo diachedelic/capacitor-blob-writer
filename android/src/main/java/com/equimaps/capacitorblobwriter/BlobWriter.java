@@ -51,11 +51,13 @@ public class BlobWriter extends Plugin {
     }
 
     @PluginMethod()
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
-
-        JSObject ret = new JSObject();
-        ret.put("value", value);
-        call.success(ret);
+    public void getConfig(PluginCall call) {
+        if (this.server != null) {
+            JSObject ret = new JSObject();
+            ret.put("baseUrl", "http://localhost:" + this.server.getListeningPort());
+            call.success(ret);
+        } else {
+            call.error("Server not running", "SERVER_DOWN", null);
+        }
     }
 }

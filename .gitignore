@@ -8,3 +8,4 @@ xcuserdata
 ios/Plugin/Pods
 android/build
 android/capacitor-blob-writer.iml
+example/www/js/bundle.*

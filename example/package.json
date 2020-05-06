@@ -4,7 +4,7 @@
   "description": "An Amazing Capacitor App",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "rollup -cw"
   },
   "keywords": [
     "capacitor",
@@ -16,5 +16,9 @@
     "@capacitor/cli": "^2.0.2",
     "@capacitor/core": "^2.0.2",
     "capacitor-blob-writer": "../"
+  },
+  "devDependencies": {
+    "rollup": "^2.8.0",
+    "rollup-plugin-node-resolve": "^5.2.0"
   }
 }
