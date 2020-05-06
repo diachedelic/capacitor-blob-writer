@@ -1,5 +1,9 @@
 import { WebPlugin } from '@capacitor/core';
-import { BlobWriterPlugin } from './definitions';
+import {
+  BlobWriterPlugin,
+  BlobWriteOptions,
+  BlobWriteResult,
+} from './definitions';
 
 export class BlobWriterWeb extends WebPlugin implements BlobWriterPlugin {
   constructor() {
@@ -9,9 +13,8 @@ export class BlobWriterWeb extends WebPlugin implements BlobWriterPlugin {
     });
   }
 
-  async echo(options: { value: string }): Promise<{value: string}> {
-    console.log('ECHO', options);
-    return options;
+  async writeFile(options: BlobWriteOptions): Promise<BlobWriteResult> {
+    throw new Error('not implemented')
   }
 }
 
