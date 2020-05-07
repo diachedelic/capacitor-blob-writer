@@ -86,9 +86,12 @@ public class BlobWriterServer extends NanoHTTPD {
                 File tmpFile = File.createTempFile(tmpName, null, tmpDir);
                 tmpFile.deleteOnExit();
 
+                // any smaller than this and performance suffers noticeably on my Samsung A5
+                int chunkSize = 512 * 1024;
+
                 try {
                     out = new FileOutputStream(tmpFile);
-                    byte[] buf = new byte[1024];
+                    byte[] buf = new byte[chunkSize];
                     int bytesRead;
                     long totalBytesRead = 0;
 

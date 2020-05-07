@@ -80,12 +80,6 @@ async function run() {
   // overwrite file
   await testWrite({ path: `${now}.txt` })
 
-  // edge cases with chunk sizes when writing to disk
-  const chunkSize = 1024
-  await testWrite({ blob: makeBlob(chunkSize) })
-  await testWrite({ blob: makeBlob(chunkSize - 1) })
-  await testWrite({ blob: makeBlob(chunkSize + 1) })
-
   // alternate directory
   await testWrite({ directory: FilesystemDirectory.Cache })
 
