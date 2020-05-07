@@ -10,3 +10,4 @@ android/build
 android/capacitor-blob-writer.iml
 example/www/js/bundle.*
 example/android/app/src/main/assets
+example/ios/App/App/capacitor.config.json
