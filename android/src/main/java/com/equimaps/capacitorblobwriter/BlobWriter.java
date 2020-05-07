@@ -24,8 +24,15 @@ public class BlobWriter extends Plugin {
         int retriesLeft = 5;
         File tmpDir = this.getContext().getCacheDir();
 
+        // range of private ports
+        int startPort = 49151;
+        int endPort = 65536;
+        Random random = new Random();
+
         while (this.server == null && retriesLeft > 0) {
-            int port = getRandomPrivatePort();
+            // select a random private port
+            int port = startPort + random.nextInt(endPort - startPort);
+
             BlobWriterServer server = new BlobWriterServer(port, getLogTag(), tmpDir);
 
             try {
@@ -38,16 +45,6 @@ public class BlobWriter extends Plugin {
 
             retriesLeft--;
         }
-    }
-
-    private int getRandomPrivatePort() {
-        Random random = new Random();
-
-        // choose private ports only
-        int startPort = 49151;
-        int endPort = 65536;
-
-        return startPort + random.nextInt(endPort - startPort);
     }
 
     @PluginMethod()
