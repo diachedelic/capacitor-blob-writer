@@ -20,17 +20,17 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
     })
   ])
 
-  const absolutePath = uri.replace('file://', '');
+  const absolutePath = uri.replace('file://', '')
 
   const { status } = await fetch(baseUrl + absolutePath, {
     headers: { authorization: authToken },
     method: 'put',
     body: options.data,
-  });
+  })
 
   if (status !== 204) {
     throw new Error('unexpected HTTP status')
   }
 
-  return { uri };
+  return { uri }
 }
