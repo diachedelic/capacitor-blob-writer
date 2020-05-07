@@ -5,7 +5,7 @@ xcuserdata
 .idea
 .gradle
 .settings
-ios/Plugin/Pods
+ios/Pods/
 android/build
 android/capacitor-blob-writer.iml
 example/www/js/bundle.*
