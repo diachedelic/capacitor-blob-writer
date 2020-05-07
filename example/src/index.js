@@ -53,7 +53,7 @@ function makeBlob(byteLength) {
 }
 
 async function testWrite({
-  path = `/${Math.random()}.bin`,
+  path = `${Math.random()}.bin`,
   blob = makeBlob(10),
   directory = FilesystemDirectory.Data,
 }) {
@@ -75,10 +75,10 @@ async function testWrite({
 async function run() {
   // non-existant file
   const now = Date.now()
-  await testWrite({ path: `/${now}.txt` })
+  await testWrite({ path: `${now}.txt` })
 
   // overwrite file
-  await testWrite({ path: `/${now}.txt` })
+  await testWrite({ path: `${now}.txt` })
 
   // edge cases with chunk sizes when writing to disk
   const chunkSize = 1024
@@ -99,8 +99,8 @@ async function run() {
   // write same file concurrently
   try {
     await Promise.all([
-      testWrite({ path: '/concurrent.bin' }),
-      testWrite({ path: '/concurrent.bin' }),
+      testWrite({ path: 'concurrent.bin' }),
+      testWrite({ path: 'concurrent.bin' }),
     ])
   } catch (err) {
     if (err.message !== 'buffers differ') {
