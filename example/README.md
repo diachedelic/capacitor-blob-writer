@@ -1,16 +1,17 @@
-## Created with Capacitor Create
+# Example app
+For development of this plugin.
 
-This app was created using the `npx @capacitor/cli create` command, and comes with a very
-minimal shell for building an app.
+## Instructions
 
-Note: unless you know what you're doing, we don't recommend using the `create` way of building an app. Instead, you'll
-likely want to create an app using your framework's tooling (such as `create-react-app`), and then *add* capacitor
-to *that* project (using `npx @capacitor/cli init`).
+```
+npm run watch &
 
-### Running this example
+cd example && \
+  npm i && \
+  npx cap update && \
+  npx cap copy &&
+  npm run watch &
 
-To run the provided example, can use serve command:
-
-```bash
-npx cap serve
+npx cap open android
+npx cap open ios
 ```
