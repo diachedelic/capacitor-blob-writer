@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Write javascript Blobs to the filesystem efficiently",
   "main": "dist/plugin.js",
+  "module": "dist/plugin.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "npm run clean && rollup -c",
