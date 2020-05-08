@@ -37,7 +37,7 @@ import { writeFile } from 'capacitor-blob-writer'
 async function downloadVideo() {
   // fetch a blob
   const res = await fetch('http://example.com/video.mp4')
-  const blob = await res.body()
+  const blob = await res.blob()
 
   const { uri } = await writeFile({
     path: 'video.mp4',
