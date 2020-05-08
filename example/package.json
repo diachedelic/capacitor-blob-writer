@@ -4,6 +4,7 @@
   "description": "An Amazing Capacitor App",
   "main": "index.js",
   "scripts": {
+    "build": "rollup -c",
     "watch": "rollup -cw"
   },
   "keywords": [
@@ -18,7 +19,6 @@
     "capacitor-blob-writer": "../"
   },
   "devDependencies": {
-    "rollup": "^2.8.0",
-    "rollup-plugin-node-resolve": "^5.2.0"
+    "rollup": "^2.8.0"
   }
 }

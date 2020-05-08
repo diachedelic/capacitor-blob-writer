@@ -1,7 +1,4 @@
 .settings
-example/www/js/bundle.*
-example/android/app/src/main/assets
-example/ios/App/App/capacitor.config.json
 
 # node files
 dist/

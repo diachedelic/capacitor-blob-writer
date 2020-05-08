@@ -3,17 +3,17 @@ const { Filesystem } = Plugins
 
 // import directly, instead of using Capacitor.Plugins
 // see https://capacitor.ionicframework.com/docs/plugins/js/
-import { writeFile } from '../../dist/plugin.mjs'
+import { writeFile } from 'capacitor-blob-writer'
 
 const output = document.createElement('pre')
 document.body.innerHTML = ''
 document.body.appendChild(output)
 
-function log (msg) {
+function log (msg: string) {
   output.innerHTML += `${msg}\n`
 }
 
-function arrayBufferToBase64(buffer) {
+function arrayBufferToBase64(buffer: ArrayBuffer) {
   var binary = '';
   var bytes = new Uint8Array(buffer);
   var len = bytes.byteLength;
@@ -23,7 +23,7 @@ function arrayBufferToBase64(buffer) {
   return btoa(binary);
 }
 
-async function compareBlobs(...blobs) {
+async function compareBlobs(...blobs: Blob[]) {
   const buffers = await Promise.all(
     blobs.map(
       // read blobs as ArrayBuffers
@@ -49,7 +49,7 @@ async function compareBlobs(...blobs) {
 }
 
 // make a blob of random binary data, takes a while
-function makeRandomBlob(byteLength) {
+function makeRandomBlob(byteLength: number) {
   const buffer = new ArrayBuffer(byteLength)
   const view = new DataView(buffer)
   let position = 0
@@ -64,7 +64,7 @@ function makeRandomBlob(byteLength) {
 }
 
 // makes a blob of uniform data, faster than makeRandomBlob
-function makeUniformBlob(byteLength) {
+function makeUniformBlob(byteLength: number) {
   let blob = new Blob([])
 
   // avoid running out of memory by gradually increasing the size of the blob,
@@ -178,8 +178,11 @@ async function runBenchmark() {
 async function runAll() {
   await runTests()
 
-  // benchmarks generally cause a crash :)
-  // await runBenchmark()
+  // benchmarks generally cause a crash, disable until required :)
+  const iWantACrash = false
+  if (iWantACrash) {
+    await runBenchmark()
+  }
 }
 
 runAll().catch(err => {

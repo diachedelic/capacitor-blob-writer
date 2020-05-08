@@ -1,12 +1,37 @@
-export * from './definitions';
+// not implemented
 // export * from './web';
 
-import {
-  BlobWriteOptions,
-  BlobWriteResult,
-} from './definitions';
+import { Plugins, FilesystemDirectory } from '@capacitor/core';
 
-import { Plugins } from '@capacitor/core';
+declare module "@capacitor/core" {
+  interface PluginRegistry {
+    BlobWriter: BlobWriterPlugin;
+  }
+}
+
+export interface BlobWriterPlugin {
+  // used internally
+  getConfig(): Promise<BlobWriteResult>;
+}
+
+export interface BlobWriteOptions {
+  /**
+   * The filename to write
+   */
+  path: string;
+  /**
+   * The data to write
+   */
+  data: Blob;
+  /**
+   * The FilesystemDirectory to store the file in
+   */
+  directory?: FilesystemDirectory;
+}
+
+export interface BlobWriteResult {
+  uri: string;
+}
 
 export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteResult> {
   const [
