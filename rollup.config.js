@@ -8,17 +8,21 @@ export default {
       file: 'dist/plugin.js',
       format: 'umd',
       name: 'capacitorBlobWriter',
-      sourcemap: true
+      sourcemap: true,
+      globals: {
+        '@capacitor/core': 'capacitorExports',
+      },
     },
 
     {
       file: 'dist/plugin.mjs',
       format: 'es',
-      sourcemap: true
+      sourcemap: true,
     },
   ],
+  external: ['@capacitor/core'],
   plugins: [
     nodeResolve(),
-    typescript()
-  ]
+    typescript(),
+  ],
 };
