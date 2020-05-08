@@ -27,8 +27,14 @@
   },
   "files": [
     "dist/",
-    "ios/",
-    "android/",
+    "android/*.gradle",
+    "android/proguard-rules.pro",
+    "android/gradle/wrapper/gradle-wrapper.properties",
+    "android/gradle.properties",
+    "ios/Plugin/Plugin.*",
+    "android/src/main/",
+    "ios/Podfile*",
+    "ios/Plugin/Info.plist",
     "CapacitorBlobWriter.podspec"
   ],
   "keywords": [
