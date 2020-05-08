@@ -1,5 +1,5 @@
 # capacitor-blob-writer
-An faster, more stable alternative to `Filesystem.writeFile`.
+A faster, more stable alternative to `Filesystem.writeFile` for larger files.
 
 ## Installation
 ```sh
