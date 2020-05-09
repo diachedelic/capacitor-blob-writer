@@ -75,7 +75,8 @@ Further reading: https://github.com/ionic-team/capacitor/issues/984
 When the plugin is loaded, a simple webserver is started on a random
 port, which streams authenticated `PUT` requests to disk, then moves them into
 place. `BlobWriter.writeFile` handles the actual `fetch` call and associated
-authentication. Because browsers are highly optimised for network operations,
+authentication (and falls back to `Filesystem.writeFile` if the request fails).
+Because browsers are highly optimised for network operations,
 this write does not block the UI (unlike encoding Base64).
 
 Incredibly, neither iOS nor Android's webview are capable of correctly
@@ -88,7 +89,7 @@ webserver will be required for the forseeable future.
 - potential security risk (only as secure as [GCDWebServer](https://github.com/swisspol/GCDWebServer)/[nanohttpd](https://github.com/NanoHttpd/nanohttpd)), and also #12
 - no `recursive` option yet (see #7)
 - no `append` option yet (see #11)
-- no support for Electron (see #5) or Web (see #4) yet
+- still uses `Filesystem.writeFile` for Electron (see #5)
 
 ## Benchmarks
 I have compared the performance & stability of `Filesystem.writeFile` with

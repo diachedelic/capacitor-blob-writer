@@ -99,15 +99,25 @@ async function testWrite({
 
   // read
   const fileURL = Capacitor.convertFileSrc(uri)
-  const fileResponse = await fetch(fileURL)
+  let fileBlob
 
-  if (fileResponse.status === 404) {
-    throw new Error('File not found')
-  } else if (fileResponse.status !== 204) {
-    throw new Error('bad status')
+  if (fileURL.startsWith('http')) {
+    const fileResponse = await fetch(fileURL)
+
+    if (fileResponse.status === 404) {
+      throw new Error('File not found')
+    } else if (fileResponse.status !== 204) {
+      throw new Error('bad status')
+    }
+
+    fileBlob = await fileResponse.blob()
+  } else {
+    // web environment does not yet support HTTP access to files
+    const { data } = await Filesystem.readFile({ path, directory })
+    const url = 'data:;base64,' + data
+    const res = await fetch(url)
+    fileBlob = await res.blob()
   }
-
-  const fileBlob = await fileResponse.blob()
 
   // compare
   await compareBlobs(blob, fileBlob)
