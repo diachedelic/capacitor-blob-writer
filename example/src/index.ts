@@ -1,5 +1,5 @@
 import { Plugins, FilesystemDirectory, Capacitor } from '@capacitor/core'
-const { Filesystem } = Plugins
+const { Filesystem, Device } = Plugins
 
 // import directly, instead of using Capacitor.Plugins
 // see https://capacitor.ionicframework.com/docs/plugins/js/
@@ -8,6 +8,8 @@ import { writeFile } from 'capacitor-blob-writer'
 const output = document.createElement('pre')
 document.body.innerHTML = ''
 document.body.appendChild(output)
+
+let platform: string;
 
 function log (msg: string) {
   output.innerHTML += `${msg}\n`
@@ -91,10 +93,18 @@ async function testWrite({
   path = `${Math.random()}.bin`,
   blob = makeRandomBlob(10),
   directory = FilesystemDirectory.Data,
+  recursive = false,
 }) {
   // write
   const start = Date.now()
-  const { uri } = await writeFile({ path, directory, data: blob })
+  const { uri } = await writeFile({
+    path,
+    directory,
+    data: blob,
+    recursive,
+    fallback: platform === 'web',
+  })
+
   log(`wrote ${blob.size} bytes in ${Date.now() - start}ms`)
 
   // read
@@ -132,6 +142,15 @@ async function runTests() {
 
   // overwrite file
   await testWrite({ path: `${now}.txt` })
+
+  // no file extension
+  await testWrite({ path: `${now}` })
+
+  // deeply nested file
+  await testWrite({
+    path: `foo/${now}/${now}/${now}.txt`,
+    recursive: true,
+  })
 
   // alternate directory
   await testWrite({ directory: FilesystemDirectory.Cache })
@@ -192,6 +211,8 @@ async function runBenchmark() {
 }
 
 async function runAll() {
+  platform = (await Device.getInfo()).platform
+
   await runTests()
 
   // benchmarks generally cause a crash, disable until required :)

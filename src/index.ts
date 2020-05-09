@@ -1,6 +1,7 @@
 import {
   Plugins,
   FilesystemDirectory,
+  FilesystemEncoding,
   WebPlugin,
   registerWebPlugin,
 } from '@capacitor/core';
@@ -85,6 +86,15 @@ export interface BlobWriteOptions {
    * The FilesystemDirectory to store the file in
    */
   directory?: FilesystemDirectory;
+  /**
+   * Whether to create any missing parent directories.
+   * Defaults to false
+   */
+  recursive?: boolean;
+  /**
+   * Fallback to Filesystem
+   */
+  fallback?: boolean;
 }
 
 export interface BlobWriteResult {
@@ -101,10 +111,21 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
       { uri }
     ] = await Promise.all([
       Plugins.BlobWriter.getConfig(),
-      Plugins.Filesystem.getUri({
-        path: options.path,
-        directory: options.directory,
-      })
+      options.recursive ?
+        // use existing recursive implementation
+        Plugins.Filesystem.writeFile({
+          path: options.path,
+          directory: options.directory,
+          recursive: options.recursive,
+          // create empty file
+          encoding: FilesystemEncoding.UTF8,
+          data: '',
+        }) :
+        // just fetch URI for faster response time
+        Plugins.Filesystem.getUri({
+          path: options.path,
+          directory: options.directory,
+        })
     ])
 
     const absolutePath = uri.replace('file://', '')
@@ -121,21 +142,25 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
 
     return { uri }
   } catch(err) {
-    if (err.code !== 'NOT_IMPLEMENTED') {
-      console.error(err)
+    if (options.fallback) {
+      if (err.code !== 'NOT_IMPLEMENTED') {
+        console.error(err)
+      }
+
+      // fallback to filesystem
+      const buffer = await new Response(options.data).arrayBuffer()
+      const encoded = arrayBufferToBase64(buffer)
+
+      const { uri } = await Plugins.Filesystem.writeFile({
+        path: options.path,
+        directory: options.directory,
+        data: encoded,
+        recursive: options.recursive,
+      })
+
+      return { uri }
     }
 
-    // fallback to filesystem
-    const buffer = await new Response(options.data).arrayBuffer()
-    const encoded = arrayBufferToBase64(buffer)
-
-    const { uri } = await Plugins.Filesystem.writeFile({
-      path: options.path,
-      directory: options.directory,
-      data: encoded,
-      recursive: true,
-    })
-
-    return { uri }
+    throw err
   }
 }

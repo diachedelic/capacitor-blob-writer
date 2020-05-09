@@ -36,13 +36,24 @@ import { writeFile } from 'capacitor-blob-writer'
 
 async function downloadVideo() {
   // fetch a blob
-  const res = await fetch('http://example.com/video.mp4')
+  const res = await fetch('http://example.com/funny.mp4')
   const blob = await res.blob()
 
   const { uri } = await writeFile({
-    path: 'video.mp4',
+    path: 'media/videos/funny.mp4',
     directory: FilesystemDirectory.Data,
-    data: blob, // must be a Blob!
+
+    // data must be a Blob (creating a Blob which wraps other data types
+    // is trivial)
+    data: blob,
+
+    // create intermediate directories if they don't already exist
+    // default: false
+    recursive: true,
+
+    // fallback to Filesystem.writeFile instead of throwing an error
+    // default: true
+    fallback: false,
   })
 
   const src = Capacitor.convertFileSrc(uri)
@@ -87,7 +98,6 @@ webserver will be required for the forseeable future.
 
 ## Known limitations & issues
 - potential security risk (only as secure as [GCDWebServer](https://github.com/swisspol/GCDWebServer)/[nanohttpd](https://github.com/NanoHttpd/nanohttpd)), and also #12
-- no `recursive` option yet (see #7)
 - no `append` option yet (see #11)
 - still uses `Filesystem.writeFile` for Electron (see #5)
 
