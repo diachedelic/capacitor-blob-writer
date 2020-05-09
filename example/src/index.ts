@@ -111,7 +111,7 @@ async function testWrite({
   const fileURL = Capacitor.convertFileSrc(uri)
   let fileBlob
 
-  if (fileURL.startsWith('http')) {
+  if (fileURL.includes('://')) {
     const fileResponse = await fetch(fileURL)
 
     if (fileResponse.status === 404) {
