@@ -116,7 +116,7 @@ async function testWrite({
 
     if (fileResponse.status === 404) {
       throw new Error('File not found')
-    } else if (fileResponse.status !== 204) {
+    } else if (fileResponse.status !== 200) {
       throw new Error('bad status')
     }
 
