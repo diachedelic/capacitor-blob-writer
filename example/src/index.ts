@@ -101,6 +101,12 @@ async function testWrite({
   const fileURL = Capacitor.convertFileSrc(uri)
   const fileResponse = await fetch(fileURL)
 
+  if (fileResponse.status === 404) {
+    throw new Error('File not found')
+  } else if (fileResponse.status !== 204) {
+    throw new Error('bad status')
+  }
+
   const fileBlob = await fileResponse.blob()
 
   // compare
