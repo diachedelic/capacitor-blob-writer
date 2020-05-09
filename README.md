@@ -123,3 +123,18 @@ details.
 
 - [1] Crashes the WKWebView, which immediately reloads the page
 - [2] `Failed to load resource: WebKit encountered an internal error`
+
+### Google Chrome (MacBook Pro 2012)
+Falls back to `Filesystem.writeFile` in the browser, so these results should be
+approximately equal.
+
+| Size          | Filesystem       | BlobWriter          |
+|---------------|------------------|---------------------|
+| 1 kilobyte    | 46ms             | 45ms                |
+| 1 megabyte    | 113ms            | 105ms               |
+| 8 megabytes   | 1.5s             | 1.3s                |
+| 32 megabytes  | 6.7s             | 5.9s                |
+| 64 megabytes  | 12.5s            | 16.7s               |
+| 512 megabytes | Error[1]         | Error[1]            |
+
+- [1] `DOMException: The serialized keys and/or value are too large`
