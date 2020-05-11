@@ -53,7 +53,7 @@ async function downloadVideo() {
 
     // fallback to Filesystem.writeFile instead of throwing an error
     // default: true
-    fallback: false,
+    fallback: process.env.NODE_ENV === 'production',
   })
 
   const src = Capacitor.convertFileSrc(uri)
