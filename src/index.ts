@@ -1,7 +1,6 @@
 import {
   Plugins,
   FilesystemDirectory,
-  FilesystemEncoding,
   WebPlugin,
   registerWebPlugin,
 } from '@capacitor/core';
@@ -111,26 +110,17 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
       { uri }
     ] = await Promise.all([
       Plugins.BlobWriter.getConfig(),
-      options.recursive ?
-        // use existing recursive implementation
-        Plugins.Filesystem.writeFile({
-          path: options.path,
-          directory: options.directory,
-          recursive: options.recursive,
-          // create empty file
-          encoding: FilesystemEncoding.UTF8,
-          data: '',
-        }) :
-        // just fetch URI for faster response time
-        Plugins.Filesystem.getUri({
-          path: options.path,
-          directory: options.directory,
-        })
+      Plugins.Filesystem.getUri({
+        path: options.path,
+        directory: options.directory,
+      }),
     ])
 
     const absolutePath = uri.replace('file://', '')
+    const queryString = options.recursive ? '?recursive=true' : ''
+    const url = baseUrl + absolutePath + queryString
 
-    const { status } = await fetch(baseUrl + absolutePath, {
+    const { status } = await fetch(url, {
       headers: { authorization: authToken },
       method: 'put',
       body: options.data,

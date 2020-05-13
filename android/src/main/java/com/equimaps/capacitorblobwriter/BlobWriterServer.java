@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.UUID;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -104,6 +105,12 @@ public class BlobWriterServer extends NanoHTTPD {
                     if (out != null) {
                         out.close();
                     }
+                }
+
+                List<String> recursiveParam = session.getParameters().get("recursive");
+
+                if (recursiveParam != null && recursiveParam.contains("true")) {
+                    destFile.getParentFile().mkdirs();
                 }
 
                 // then move into place

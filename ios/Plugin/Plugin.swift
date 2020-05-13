@@ -37,16 +37,26 @@ public class BlobWriter: CAPPlugin {
       }
       
       let fileRequest = request as! GCDWebServerFileRequest
+      let src = URL(fileURLWithPath: fileRequest.temporaryPath)
+      let dest = URL(fileURLWithPath: fileRequest.path)
       
       // move file into place
       do {
         // remove file if it exists
-        try? FileManager.default.removeItem(atPath: fileRequest.path)
+        try? FileManager.default.removeItem(at: dest)
         
-        try FileManager.default.moveItem(
-          atPath: fileRequest.temporaryPath,
-          toPath: fileRequest.path
-        )
+        // create intermediate directories
+        if (request.query?["recursive"] == "true") {
+          let destDir = dest.deletingLastPathComponent()
+
+          try FileManager.default.createDirectory(
+            at: destDir,
+            withIntermediateDirectories: true,
+            attributes: nil
+          )
+        }
+
+        try FileManager.default.moveItem(at: src, to: dest)
       } catch {
         CAPLog.print("BlobWriter failed to move temp file into place", error)
         return self.emptyCorsResponse(statusCode: 500, request: request)

@@ -152,6 +152,12 @@ async function runTests() {
     recursive: true,
   })
 
+  // recursive but no parent directory
+  await testWrite({
+    path: `${now}-root.txt`,
+    recursive: true,
+  })
+
   // alternate directory
   await testWrite({ directory: FilesystemDirectory.Cache })
 
