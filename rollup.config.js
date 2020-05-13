@@ -5,7 +5,7 @@ export default {
   input: 'src/index.ts',
   output: [
     {
-      file: 'dist/plugin.js',
+      file: 'dist/plugin.umd.js',
       format: 'umd',
       name: 'capacitorBlobWriter',
       sourcemap: true,
@@ -15,7 +15,7 @@ export default {
     },
 
     {
-      file: 'dist/plugin.mjs',
+      file: 'dist/plugin.esm.js',
       format: 'es',
       sourcemap: true,
     },
