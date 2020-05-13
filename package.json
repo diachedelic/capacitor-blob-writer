@@ -1,6 +1,6 @@
 {
   "name": "capacitor-blob-writer",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Write javascript Blobs to the filesystem efficiently",
   "main": "dist/plugin.umd.js",
   "module": "dist/plugin.esm.js",
