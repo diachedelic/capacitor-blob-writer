@@ -73,10 +73,6 @@ public class BlobWriterServer extends NanoHTTPD {
 
             String destPath = session.getUri();
             File destFile = new File(destPath);
-            if (destFile.isDirectory()) {
-                Log.e(logTag, "cannot write to directory");
-                return newCorsResponse(Response.Status.INTERNAL_ERROR, session);
-            }
 
             try {
                 InputStream in = session.getInputStream();
