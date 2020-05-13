@@ -82,9 +82,13 @@ public class BlobWriter: CAPPlugin {
         ])
         
         // success
-        CAPLog.print("BlobWriter listening at \(server.serverURL!.absoluteString)")
-        _server = server
-        break
+        if (server.serverURL != nil) {
+          CAPLog.print("BlobWriter listening at \(server.serverURL!.absoluteString)")
+          _server = server
+          break
+        } else {
+          CAPLog.print("BlobWriter failed to start on port \(port)")
+        }
       } catch {
         CAPLog.print("BlobWriter failed to start on port \(port)", error)
       }
