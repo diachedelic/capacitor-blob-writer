@@ -15,17 +15,15 @@ declare module "@capacitor/core" {
   }
 }
 
-declare global {
-  interface Error {
-    code?: string;
-  }
-}
-
 /**
  * for internal use only
  */
 interface BlobWriterPlugin {
   getConfig(): Promise<ServerConfig>;
+}
+
+interface BlobWriterError {
+  code?: string;
 }
 
 interface ServerConfig {
@@ -48,7 +46,7 @@ class BlobWriterWeb extends WebPlugin implements BlobWriterPlugin {
   }
 
   async getConfig(): Promise<ServerConfig> {
-    const err = new Error('Not implemented for web')
+    const err = new Error('Not implemented for web') as BlobWriterError
     err.code = 'NOT_IMPLEMENTED'
     throw err
   }
@@ -133,7 +131,7 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
     return { uri }
   } catch(err) {
     if (options.fallback) {
-      if (err.code !== 'NOT_IMPLEMENTED') {
+      if ((err as BlobWriterError).code !== 'NOT_IMPLEMENTED') {
         console.error(err)
       }
 
