@@ -14,11 +14,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@capacitor/cli": "^2.0.2",
-    "@capacitor/core": "^2.0.2",
+    "@capacitor/cli": "^2.4.0",
+    "@capacitor/core": "^2.4.0",
     "capacitor-blob-writer": "../"
   },
   "devDependencies": {
-    "rollup": "^2.8.0"
+    "rollup": "^2.23.0"
   }
 }
