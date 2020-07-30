@@ -73,6 +73,7 @@ public class BlobWriter: CAPPlugin {
       do {
         try server.start(options: [
           GCDWebServerOption_Port: port,
+          GCDWebServerOption_BindToLocalhost: true,
 
           // unfortunately, Basic auth breaks CORS
           // pending https://github.com/swisspol/GCDWebServer/issues/479
