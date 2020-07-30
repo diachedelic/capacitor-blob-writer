@@ -53,8 +53,13 @@ async function downloadVideo() {
     recursive: true,
 
     // fallback to Filesystem.writeFile instead of throwing an error
+    // (you may also specify a unary callback, which takes an Error and returns
+    // a boolean)
     // default: true
-    fallback: process.env.NODE_ENV === 'production',
+    fallback: (err) => {
+      logError(err)
+      return process.env.NODE_ENV === 'production'
+    }
   })
 
   const src = Capacitor.convertFileSrc(uri)

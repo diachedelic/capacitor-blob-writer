@@ -102,7 +102,10 @@ async function testWrite({
     directory,
     data: blob,
     recursive,
-    fallback: platform === 'web',
+    fallback: (err) => {
+      console.error(err)
+      return platform === 'web'
+    },
   })
 
   log(`wrote ${blob.size} bytes in ${Date.now() - start}ms`)

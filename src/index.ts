@@ -37,6 +37,10 @@ interface ServerConfig {
   authToken: string;
 }
 
+interface FallbackCallback {
+  (error: BlobWriterError): boolean
+}
+
 class BlobWriterWeb extends WebPlugin implements BlobWriterPlugin {
   constructor() {
     super({
@@ -91,7 +95,7 @@ export interface BlobWriteOptions {
   /**
    * Fallback to Filesystem
    */
-  fallback?: boolean;
+  fallback?: boolean | FallbackCallback;
 }
 
 export interface BlobWriteResult {
@@ -130,7 +134,11 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
 
     return { uri }
   } catch(err) {
-    if (options.fallback) {
+    if (
+      typeof options.fallback === 'function'
+        ? options.fallback(err)
+        : options.fallback
+    ) {
       if ((err as BlobWriterError).code !== 'NOT_IMPLEMENTED') {
         console.error(err)
       }
