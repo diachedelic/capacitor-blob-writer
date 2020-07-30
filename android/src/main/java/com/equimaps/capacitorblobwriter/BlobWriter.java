@@ -55,7 +55,7 @@ public class BlobWriter extends Plugin {
             ret.put("authToken", this.server.getAuthToken());
             call.success(ret);
         } else {
-            call.error("Server not running", "SERVER_DOWN", null);
+            call.reject("Server not running");
         }
     }
 }
