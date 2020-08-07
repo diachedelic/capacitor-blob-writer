@@ -129,7 +129,7 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
     })
 
     if (status !== 204) {
-      throw new Error('unexpected HTTP status')
+      throw new Error('unexpected HTTP status: ' + status)
     }
 
     return { uri }
