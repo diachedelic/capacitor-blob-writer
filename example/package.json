@@ -2,17 +2,17 @@
   "name": "capacitor-app",
   "version": "1.0.0",
   "description": "An Amazing Capacitor App",
+  "keywords": [
+    "capacitor",
+    "mobile"
+  ],
+  "license": "ISC",
+  "author": "",
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -cw"
   },
-  "keywords": [
-    "capacitor",
-    "mobile"
-  ],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@capacitor/cli": "^2.4.0",
     "@capacitor/core": "^2.4.0",
