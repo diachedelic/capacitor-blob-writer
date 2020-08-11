@@ -7,7 +7,9 @@ Tested with Capacitor v2.
 npm install capacitor-blob-writer
 npx cap update
 ```
-Then (for Android), add to your `MainActivity.java`:
+
+### Android
+Import the plugin in `MainActivity.java`:
 
 ```java
 import com.equimaps.capacitorblobwriter.BlobWriter;
@@ -25,6 +27,23 @@ public class MainActivity extends BridgeActivity {
     }});
   }
 }
+```
+
+Create `res/xml/network_security_config.xml`, configure it to [allow cleartext](https://github.com/diachedelic/capacitor-blob-writer/issues/20) communication with the local BlobWriter server.
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+</network-security-config>
+```
+
+Reference the network security configuration in `AndroidManifest.xml`:
+```xml
+<application
+    android:networkSecurityConfig="@xml/network_security_config"
+    ...
 ```
 
 ## Usage
