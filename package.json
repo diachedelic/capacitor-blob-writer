@@ -37,17 +37,18 @@
     "prepublishOnly": "npm run build",
     "watch": "rollup -cw"
   },
-  "dependencies": {
-    "@capacitor/core": "latest"
-  },
   "devDependencies": {
-    "@capacitor/android": "latest",
-    "@capacitor/ios": "latest",
+    "@capacitor/android": "^2.4.0",
+    "@capacitor/core": "^2.4.0",
+    "@capacitor/ios": "^2.4.0",
     "rimraf": "^3.0.0",
-    "rollup": "^2.23.0",
+    "rollup": "^2.23.1",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-typescript2": "^0.27.1",
+    "rollup-plugin-typescript2": "^0.27.2",
     "typescript": "^3.9.7"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^2.0.0"
   },
   "capacitor": {
     "ios": {
