@@ -102,8 +102,7 @@ async function testWrite({
     directory,
     data: blob,
     recursive,
-    fallback: (err) => {
-      console.error(err)
+    fallback: () => {
       return platform === 'web'
     },
   })
