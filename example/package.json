@@ -14,11 +14,11 @@
     "watch": "rollup -cw"
   },
   "dependencies": {
-    "@capacitor/cli": "^2.4.0",
-    "@capacitor/core": "^2.4.0",
+    "@capacitor/cli": "^2.4.2",
+    "@capacitor/core": "^2.4.2",
     "capacitor-blob-writer": "../"
   },
   "devDependencies": {
-    "rollup": "^2.23.0"
+    "rollup": "^2.28.2"
   }
 }
