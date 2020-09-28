@@ -49,10 +49,10 @@ class BlobWriterWeb extends WebPlugin implements BlobWriterPlugin {
     });
   }
 
-  async getConfig(): Promise<ServerConfig> {
+  getConfig(): Promise<ServerConfig> {
     const err = new Error('Not implemented for web') as BlobWriterError
     err.code = 'NOT_IMPLEMENTED'
-    throw err
+    return Promise.reject(err);
   }
 }
 
