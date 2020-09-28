@@ -5,6 +5,8 @@ import {
   registerWebPlugin,
 } from '@capacitor/core';
 
+import writeFileViaBridge from './fallback';
+
 /**
  * PRIVATE
  */
@@ -59,16 +61,6 @@ class BlobWriterWeb extends WebPlugin implements BlobWriterPlugin {
 const BlobWriter = new BlobWriterWeb();
 
 registerWebPlugin(BlobWriter);
-
-function arrayBufferToBase64(buffer: ArrayBuffer) {
-  var binary = '';
-  var bytes = new Uint8Array(buffer);
-  var len = bytes.byteLength;
-  for (var i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-}
 
 /**
  * PUBLIC
@@ -143,18 +135,14 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
         console.error(err)
       }
 
-      // fallback to filesystem
-      const buffer = await new Response(options.data).arrayBuffer()
-      const encoded = arrayBufferToBase64(buffer)
-
-      const { uri } = await Plugins.Filesystem.writeFile({
-        path: options.path,
-        directory: options.directory,
-        data: encoded,
-        recursive: options.recursive,
-      })
-
-      return { uri }
+      return writeFileViaBridge(
+        options.directory,
+        options.path,
+        options.data,
+        options.recursive,
+      ).then(function(uri) {
+        return { uri };
+      });
     }
 
     throw err
