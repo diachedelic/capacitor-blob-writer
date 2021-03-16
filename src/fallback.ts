@@ -20,7 +20,7 @@ function append(
   data: Blob
 ): Promise<void> {
   if (data.size === 0) {
-    return;
+    return Promise.resolve();
   }
 
   return new Response(
