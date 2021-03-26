@@ -112,12 +112,12 @@ public class BlobWriter: CAPPlugin {
 //      let authToken = "Basic \(basicBase64)"
       let authToken = _authPassword
       
-      call.success([
+      call.resolve([
         "baseUrl": baseUrl,
         "authToken": authToken
       ])
     } else {
-      call.error("BlobWriter server not running")
+      call.reject("BlobWriter server not running", "server_down")
     }
   }
   

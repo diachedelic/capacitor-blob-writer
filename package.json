@@ -38,9 +38,9 @@
     "watch": "rollup -cw"
   },
   "devDependencies": {
-    "@capacitor/android": "^2.4.3",
-    "@capacitor/core": "^2.4.3",
-    "@capacitor/ios": "^2.4.3",
+    "@capacitor/android": "^2.4.7",
+    "@capacitor/core": "^2.4.7",
+    "@capacitor/ios": "^2.4.7",
     "rimraf": "^3.0.0",
     "rollup": "^2.28.2",
     "rollup-plugin-node-resolve": "^5.2.0",

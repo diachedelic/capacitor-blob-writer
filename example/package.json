@@ -14,8 +14,8 @@
     "watch": "rollup -cw"
   },
   "dependencies": {
-    "@capacitor/cli": "^2.4.3",
-    "@capacitor/core": "^2.4.3",
+    "@capacitor/cli": "^2.4.7",
+    "@capacitor/core": "^2.4.7",
     "capacitor-blob-writer": "../"
   },
   "devDependencies": {

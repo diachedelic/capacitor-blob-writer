@@ -1,5 +1,5 @@
 import { Plugins, FilesystemDirectory, Capacitor } from '@capacitor/core'
-const { Filesystem, Device } = Plugins
+const { Filesystem } = Plugins
 
 // import directly, instead of using Capacitor.Plugins
 // see https://capacitor.ionicframework.com/docs/plugins/js/
@@ -8,8 +8,6 @@ import { writeFile } from 'capacitor-blob-writer'
 const output = document.createElement('pre')
 document.body.innerHTML = ''
 document.body.appendChild(output)
-
-let platform: string;
 
 function log (msg: string) {
   output.innerHTML += `${msg}\n`
@@ -102,8 +100,8 @@ async function testWrite({
     directory,
     data: blob,
     recursive,
-    fallback: () => {
-      return platform === 'web'
+    fallback() {
+      return Capacitor.platform === 'web'
     },
   })
 
@@ -219,8 +217,6 @@ async function runBenchmark() {
 }
 
 async function runAll() {
-  platform = (await Device.getInfo()).platform
-
   await runTests()
 
   // benchmarks generally cause a crash, disable until required :)
