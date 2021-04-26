@@ -63,17 +63,16 @@ async function downloadVideo() {
     path: 'media/videos/funny.mp4',
     directory: FilesystemDirectory.Data,
 
-    // data must be a Blob (creating a Blob which wraps other data types
-    // is trivial)
+    // Data must be a Blob (creating a Blob which wraps other data types
+    // is trivial).
     data: blob,
 
-    // create intermediate directories if they don't already exist
+    // Create intermediate directories if they don't already exist.
     // default: false
     recursive: true,
 
-    // fallback to Filesystem.writeFile instead of throwing an error
-    // (you may also specify a unary callback, which takes an Error and returns
-    // a boolean)
+    // Determine whether to fallback to Filesystem.writeFile instead of
+    // throwing an error straight away.
     // default: true
     fallback: (err) => {
       logError(err)
@@ -114,6 +113,12 @@ place. `BlobWriter.writeFile` handles the actual `fetch` call and associated
 authentication (and falls back to `Filesystem.writeFile` if the request fails).
 Because browsers are highly optimised for network operations,
 this write does not block the UI (unlike encoding Base64).
+
+The fallback option works like this:
+- The default is `true`, so by default all errors will cause fall back to trying `Filesystem.writeFile()` instead.
+- If `fallback:` is defined to be a function, that function is expected to take an error, and return a boolean, which in turn decides whether it should fall backs to `Filesystem.writeFile()` afterwards.
+- If `fallback:` is set to `false` or the set function returns `false`, the promise will reject with the error.
+- Upon running `Filesystem.writeFile()` as fallback, failing will result in the promise rejecting with the error from `Filesystem.writeFile()`.
 
 Incredibly, neither iOS nor Android's webview are capable of correctly
 reading request bodies, due to
