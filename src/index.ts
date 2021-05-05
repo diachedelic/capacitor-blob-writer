@@ -4,12 +4,7 @@ import {
   WebPlugin,
   registerWebPlugin,
 } from '@capacitor/core';
-
 import writeFileViaBridge from './fallback';
-
-/**
- * PRIVATE
- */
 
 declare module "@capacitor/core" {
   interface PluginRegistry {
@@ -17,9 +12,6 @@ declare module "@capacitor/core" {
   }
 }
 
-/**
- * for internal use only
- */
 interface BlobWriterPlugin {
   getConfig(): Promise<ServerConfig>;
 }
@@ -29,13 +21,9 @@ interface BlobWriterError {
 }
 
 interface ServerConfig {
-  /**
-   * The origin of the web server, e.g. 'http://localhost:12345'
-   */
+  // The address of the web server, e.g. "http://localhost:12345"
   baseUrl: string;
-  /**
-   * Required value for the Authorization header
-   */
+  // The required value for the Authorization header on any write requests.
   authToken: string;
 }
 
@@ -62,38 +50,16 @@ const BlobWriter = new BlobWriterWeb();
 
 registerWebPlugin(BlobWriter);
 
-/**
- * PUBLIC
- */
-
 export interface BlobWriteOptions {
-  /**
-   * The filename to write
-   */
   path: string;
-  /**
-   * The data to write
-   */
-  data: Blob;
-  /**
-   * The FilesystemDirectory to store the file in
-   */
   directory?: FilesystemDirectory;
-  /**
-   * Whether to create any missing parent directories.
-   * Defaults to false
-   */
+  data: Blob;
   recursive?: boolean;
-  /**
-   * Fallback to Filesystem
-   */
   fallback?: boolean | FallbackCallback;
 }
 
 export interface BlobWriteResult {
-  /**
-   * The URI of the file which was just written to
-   */
+  // The URI of the file which has just been written.
   uri: string;
 }
 

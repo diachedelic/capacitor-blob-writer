@@ -2,6 +2,57 @@
 A faster, more stable alternative to `Filesystem.writeFile` for larger files.
 Tested with Capacitor v2.
 
+## Usage
+```javascript
+import { FilesystemDirectory, Capacitor } from "@capacitor/core";
+
+// You must import the module directly, rather than using 'Plugins.BlobWriter'.
+import { writeFile } from "capacitor-blob-writer";
+
+async function downloadVideo() {
+  // Firstly, obtain a Blob.
+  const videoResponse = await fetch("http://example.com/funny.mp4");
+  const videoBlob = await videoResponse.blob();
+
+  // Secondly, write the blob to disk. The 'writeFile' function takes an options
+  // object and returns an object containing the newly written file's URI.
+  const { uri } = await writeFile({
+    // The path to write the file to. The path may be specified as an absolute
+    // URL (beginning with "file://") or a relative path, in which case it is
+    // assumed to be relative to the 'directory' option.
+    path: "media/videos/funny.mp4",
+
+    // The FilesystemDirectory to write the file inside. This option is required
+    // unless the 'path' option begins with "file://".
+    directory: FilesystemDirectory.Data,
+
+    // The data to write to the file. It MUST be a Blob.
+    data: videoBlob,
+
+    // Whether to create intermediate directories as required. This option
+    // defaults to 'false'.
+    recursive: true,
+
+    // Whether to fallback to an alternative strategy on failure. See the
+    // "Fallback mode" section below for a detailed explanation. The option may
+    // either be a boolean, or a function which takes the error and returns a
+    // boolean. This option defaults to 'true'.
+    fallback(writeError) {
+      logError(writeError);
+      const shouldFallback = process.env.NODE_ENV === "production";
+      return shouldFallback;
+    }
+  });
+
+  const videoSrc = Capacitor.convertFileSrc(uri);
+  const videoElement = document.createElement("video");
+  videoElement.src = videoSrc;
+
+  // Now you can watch the video offline!
+  document.body.appendChild(videoElement);
+}
+```
+
 ## Installation
 ```sh
 npm install capacitor-blob-writer
@@ -46,51 +97,6 @@ Reference the network security configuration in `AndroidManifest.xml`:
     ...
 ```
 
-## Usage
-```javascript
-
-import { FilesystemDirectory, Capacitor } from '@capacitor/core'
-
-// you must use the module directly, rather than using `Plugins.BlobWriter`
-import { writeFile } from 'capacitor-blob-writer'
-
-async function downloadVideo() {
-  // fetch a blob
-  const res = await fetch('http://example.com/funny.mp4')
-  const blob = await res.blob()
-
-  const { uri } = await writeFile({
-    path: 'media/videos/funny.mp4',
-    directory: FilesystemDirectory.Data,
-
-    // data must be a Blob (creating a Blob which wraps other data types
-    // is trivial)
-    data: blob,
-
-    // create intermediate directories if they don't already exist
-    // default: false
-    recursive: true,
-
-    // fallback to Filesystem.writeFile instead of throwing an error
-    // (you may also specify a unary callback, which takes an Error and returns
-    // a boolean)
-    // default: true
-    fallback: (err) => {
-      logError(err)
-      return process.env.NODE_ENV === 'production'
-    }
-  })
-
-  const src = Capacitor.convertFileSrc(uri)
-
-  const video = document.createElement('video')
-  video.src = src
-
-  // watch the video offline!
-  document.body.appendChild(video)
-}
-```
-
 ## Why it is needed
 Capacitor's plugins work by passing data across the "bridge", which is the
 javascript interface within the webview which passes data to and from native
@@ -108,11 +114,10 @@ webview, for instance via `<input type="file" capture accept="video/*">`.
 Further reading: https://github.com/ionic-team/capacitor/issues/984
 
 ## How it works
-When the plugin is loaded, a simple webserver is started on a random
-port, which streams authenticated `PUT` requests to disk, then moves them into
-place. `BlobWriter.writeFile` handles the actual `fetch` call and associated
-authentication (and falls back to `Filesystem.writeFile` if the request fails).
-Because browsers are highly optimised for network operations,
+When the plugin is loaded, a simple webserver is started on a random port, which
+streams authenticated `PUT` requests to disk, then moves them into place.
+`BlobWriter.writeFile` handles the actual `fetch` call and associated
+authentication. Because browsers are highly optimised for network operations,
 this write does not block the UI (unlike encoding Base64).
 
 Incredibly, neither iOS nor Android's webview are capable of correctly
@@ -121,6 +126,15 @@ reading request bodies, due to
 [this](https://bugs.webkit.org/show_bug.cgi?id=179077). Hence an actual
 webserver will be required for the forseeable future.
 
+### Fallback mode
+There are times when `BlobWriter.writeFile` inexplicably fails to communicate
+with the webserver, or the webserver fails to write the file. This plugin offers
+a fallback mode, enabled by default, which invokes an alternative strategy when
+an error occurs. In fallback mode, the Blob is split into chunks and serially
+concatenated on disk using `Filesystem.appendFile`. While slower than
+`Filesystem.writeFile`, this strategy avoids Base64-encoding the entire Blob at
+once, making it stable for large Blobs.
+
 ## Known limitations & issues
 - potential security risk (only as secure as [GCDWebServer](https://github.com/swisspol/GCDWebServer)/[nanohttpd](https://github.com/NanoHttpd/nanohttpd)), and also #12
 - no `append` option yet (see #11)
@@ -128,7 +142,7 @@ webserver will be required for the forseeable future.
 
 ## Benchmarks
 I have compared the performance & stability of `Filesystem.writeFile` with
-`BlobWriter.writeFile` on my two devices, see `example/src/index.js` for more
+`BlobWriter.writeFile` on my devices, see `example/src/index.js` for more
 details.
 
 ### Android (Samsung A5)
@@ -160,8 +174,8 @@ details.
 - [2] `Failed to load resource: WebKit encountered an internal error`
 
 ### Google Chrome (MacBook Pro 2012)
-Falls back to `Filesystem.writeFile` in the browser, so these results should be
-approximately equal.
+The plugin falls back to `Filesystem.appendFile` in the browser, so these
+results should be approximately equal.
 
 | Size          | Filesystem       | BlobWriter          |
 |---------------|------------------|---------------------|
