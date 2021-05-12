@@ -28,7 +28,7 @@ interface ServerConfig {
 }
 
 interface FallbackCallback {
-  (error: BlobWriterError): boolean
+  (error: BlobWriterError): boolean | PromiseLike<boolean>
 }
 
 class BlobWriterWeb extends WebPlugin implements BlobWriterPlugin {
@@ -94,7 +94,7 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
   } catch(err) {
     if (
       typeof options.fallback === 'function'
-        ? options.fallback(err)
+        ? await options.fallback(err)
         : options.fallback
     ) {
       if ((err as BlobWriterError).code !== 'NOT_IMPLEMENTED') {
