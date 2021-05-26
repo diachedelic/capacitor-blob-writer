@@ -25,4 +25,5 @@ export default {
     nodeResolve(),
     typescript(),
   ],
+  inlineDynamicImports: true
 };
