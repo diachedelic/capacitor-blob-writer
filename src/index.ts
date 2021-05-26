@@ -1,9 +1,8 @@
 import {
-  Plugins,
-  FilesystemDirectory,
   WebPlugin,
-  registerWebPlugin,
+  registerPlugin,
 } from '@capacitor/core';
+import {Directory, Filesystem} from '@capacitor/filesystem'
 import writeFileViaBridge from './fallback';
 
 declare module "@capacitor/core" {
@@ -47,12 +46,11 @@ class BlobWriterWeb extends WebPlugin implements BlobWriterPlugin {
 }
 
 const BlobWriter = new BlobWriterWeb();
-
-registerWebPlugin(BlobWriter);
+registerPlugin('BlobWriter', {'web': new BlobWriterWeb()});
 
 export interface BlobWriteOptions {
   path: string;
-  directory?: FilesystemDirectory;
+  directory?: Directory;
   data: Blob;
   recursive?: boolean;
   fallback?: boolean | FallbackCallback;
@@ -69,8 +67,8 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
       { baseUrl, authToken },
       { uri }
     ] = await Promise.all([
-      Plugins.BlobWriter.getConfig(),
-      Plugins.Filesystem.getUri({
+      BlobWriter.getConfig(),
+      Filesystem.getUri({
         path: options.path,
         directory: options.directory,
       }),

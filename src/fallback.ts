@@ -1,5 +1,4 @@
-import { Plugins, FilesystemDirectory } from '@capacitor/core';
-const { Filesystem } = Plugins;
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 const chunkSize = 256 * 1024;
 
@@ -15,7 +14,7 @@ function arrayBufferToBase64(buffer: ArrayBuffer) {
 }
 
 function append(
-  directory: FilesystemDirectory,
+  directory: Directory,
   path: string,
   data: Blob
 ): Promise<void> {
@@ -37,7 +36,7 @@ function append(
 }
 
 function writeFileViaBridge (
-  directory: FilesystemDirectory,
+  directory: Directory,
   path: string,
   data: Blob,
   recursive?: boolean

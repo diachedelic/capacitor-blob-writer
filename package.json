@@ -38,9 +38,9 @@
     "watch": "rollup -cw"
   },
   "devDependencies": {
-    "@capacitor/android": "^2.4.7",
-    "@capacitor/core": "^2.4.7",
-    "@capacitor/ios": "^2.4.7",
+    "@capacitor/android": "^3.0.0",
+    "@capacitor/core": "^3.0.0",
+    "@capacitor/ios": "^3.0.0",
     "rimraf": "^3.0.0",
     "rollup": "^2.28.2",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -48,7 +48,7 @@
     "typescript": "^3.9.7"
   },
   "peerDependencies": {
-    "@capacitor/core": "^2.0.0"
+    "@capacitor/core": "^3.0.0"
   },
   "capacitor": {
     "ios": {
@@ -57,5 +57,8 @@
     "android": {
       "src": "android"
     }
+  },
+  "dependencies": {
+    "@capacitor/filesystem": "^1.0.0"
   }
 }
