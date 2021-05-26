@@ -1,18 +1,8 @@
-import {
-  Plugins,
-  FilesystemDirectory,
-  WebPlugin,
-  registerWebPlugin,
-} from '@capacitor/core';
-import writeFileViaBridge from './fallback';
+import { registerPlugin, WebPlugin } from '@capacitor/core';
+import { writeFileViaBridge } from './fallback';
+import { Directory, Filesystem } from '@capacitor/filesystem';
 
-declare module "@capacitor/core" {
-  interface PluginRegistry {
-    BlobWriter: BlobWriterPlugin;
-  }
-}
-
-interface BlobWriterPlugin {
+export interface BlobWriterPlugin {
   getConfig(): Promise<ServerConfig>;
 }
 
@@ -46,13 +36,13 @@ class BlobWriterWeb extends WebPlugin implements BlobWriterPlugin {
   }
 }
 
-const BlobWriter = new BlobWriterWeb();
-
-registerWebPlugin(BlobWriter);
+export const BlobWriter = registerPlugin<BlobWriterPlugin>('BlobWriter', {
+  web: new BlobWriterWeb()
+});
 
 export interface BlobWriteOptions {
   path: string;
-  directory?: FilesystemDirectory;
+  directory?: Directory;
   data: Blob;
   recursive?: boolean;
   fallback?: boolean | FallbackCallback;
@@ -69,8 +59,8 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
       { baseUrl, authToken },
       { uri }
     ] = await Promise.all([
-      Plugins.BlobWriter.getConfig(),
-      Plugins.Filesystem.getUri({
+      BlobWriter.getConfig(),
+      Filesystem.getUri({
         path: options.path,
         directory: options.directory,
       }),
@@ -91,7 +81,7 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
     }
 
     return { uri }
-  } catch(err) {
+  } catch (err) {
     if (
       typeof options.fallback === 'function'
         ? options.fallback(err)
@@ -106,7 +96,7 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
         options.path,
         options.data,
         options.recursive,
-      ).then(function(uri) {
+      ).then(function (uri) {
         return { uri };
       });
     }

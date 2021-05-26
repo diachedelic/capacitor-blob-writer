@@ -1,5 +1,4 @@
-import { Plugins, FilesystemDirectory } from '@capacitor/core';
-const { Filesystem } = Plugins;
+import { Directory, Filesystem } from '@capacitor/filesystem';
 
 const chunkSize = 256 * 1024;
 
@@ -15,7 +14,7 @@ function arrayBufferToBase64(buffer: ArrayBuffer) {
 }
 
 function append(
-  directory: FilesystemDirectory,
+  directory: Directory,
   path: string,
   data: Blob
 ): Promise<void> {
@@ -36,8 +35,8 @@ function append(
   });
 }
 
-function writeFileViaBridge (
-  directory: FilesystemDirectory,
+function _writeFileViaBridge(
+  directory: Directory,
   path: string,
   data: Blob,
   recursive?: boolean
@@ -48,12 +47,12 @@ function writeFileViaBridge (
     path,
     recursive,
     data: '',
-  }).then(function({ uri }) {
+  }).then(function ({ uri }) {
     // write file incrementally to be enconomical with memory
-    return append(directory, path, data).then(function() {
+    return append(directory, path, data).then(function () {
       return uri;
     })
   });
 }
 
-export default Object.freeze(writeFileViaBridge);
+export const writeFileViaBridge = Object.freeze(_writeFileViaBridge);
