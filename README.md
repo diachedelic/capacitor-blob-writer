@@ -142,7 +142,7 @@ once, making it stable for large Blobs.
 
 ## Benchmarks
 I have compared the performance & stability of `Filesystem.writeFile` with
-`BlobWriter.writeFile` on my devices, see `example/src/index.js` for more
+`BlobWriter.writeFile` on my devices, see `demo/src/index.js` for more
 details.
 
 ### Android (Samsung A5)
