@@ -29,5 +29,4 @@ export interface ServerConfig {
 
   export interface BlobWriterPlugin {
     getConfig(): Promise<ServerConfig>;
-    writeFile(options:BlobWriteOptions): Promise<BlobWriteResult>
   }
