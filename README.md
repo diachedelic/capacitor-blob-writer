@@ -55,7 +55,7 @@ async function downloadVideo() {
 
 ## Installation
 ```sh
-npm install capacitor-blob-writer
+npm install capacitor-blob-writer@^0.2.1
 npx cap update
 ```
 

@@ -1,4 +1,6 @@
 .settings
+demo
+blob_writer.umd.js*
 
 # node files
 dist/
