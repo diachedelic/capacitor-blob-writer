@@ -1,15 +1,21 @@
 {
-  "private": true,
-  "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -cw"
-  },
-  "dependencies": {
-    "@capacitor/cli": "^2.4.7",
-    "@capacitor/core": "^2.4.7",
-    "capacitor-blob-writer": "../"
-  },
-  "devDependencies": {
-    "rollup": "^2.33.3"
-  }
+    "private": true,
+    "scripts": {
+        "build": "rollup -c",
+        "watch": "rollup -cw"
+    },
+    "dependencies": {
+        "@capacitor/android": "^3.0.0",
+        "@capacitor/cli": "^3.0.0",
+        "@capacitor/core": "^3.0.0",
+        "@capacitor/filesystem": "^1.0.0",
+        "@capacitor/ios": "^3.0.0",
+        "capacitor-blob-writer": "../"
+    },
+    "devDependencies": {
+        "rollup": "^2.33.3",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-typescript2": "^0.27.3",
+        "typescript": "^3.9.7"
+    }
 }

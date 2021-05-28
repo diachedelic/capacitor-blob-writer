@@ -1,61 +1,54 @@
 {
-  "name": "capacitor-blob-writer",
-  "version": "0.2.1",
-  "description": "Write javascript Blobs to the filesystem efficiently",
-  "keywords": [
-    "capacitor",
-    "plugin",
-    "native"
-  ],
-  "bugs": {
-    "url": "https://github.com/diachedelic/capacitor-blob-writer/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/diachedelic/capacitor-blob-writer"
-  },
-  "license": "MIT",
-  "author": "James Diacono",
-  "main": "dist/plugin.umd.js",
-  "module": "dist/plugin.esm.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist/",
-    "android/*.gradle",
-    "android/gradle/wrapper/gradle-wrapper.properties",
-    "android/gradle.properties",
-    "android/proguard-rules.pro",
-    "android/src/main/",
-    "ios/Plugin/Plugin.*",
-    "ios/Podfile*",
-    "ios/Plugin/Info.plist",
-    "CapacitorBlobWriter.podspec"
-  ],
-  "scripts": {
-    "build": "npm run clean && rollup -c",
-    "clean": "rimraf ./dist",
-    "prepublishOnly": "npm run build",
-    "watch": "rollup -cw"
-  },
-  "devDependencies": {
-    "@capacitor/android": "^2.4.7",
-    "@capacitor/core": "^2.4.7",
-    "@capacitor/ios": "^2.4.7",
-    "rimraf": "^3.0.0",
-    "rollup": "^2.28.2",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-typescript2": "^0.27.3",
-    "typescript": "^3.9.7"
-  },
-  "peerDependencies": {
-    "@capacitor/core": "^2.0.0"
-  },
-  "capacitor": {
-    "ios": {
-      "src": "ios"
+    "name": "capacitor-blob-writer",
+    "version": "0.2.1",
+    "description": "Write javascript Blobs to the filesystem efficiently",
+    "keywords": [
+        "capacitor",
+        "plugin",
+        "native"
+    ],
+    "bugs": {
+        "url": "https://github.com/diachedelic/capacitor-blob-writer/issues"
     },
-    "android": {
-      "src": "android"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/diachedelic/capacitor-blob-writer"
+    },
+    "license": "MIT",
+    "author": "James Diacono",
+    "main": "blob_writer.umd.js",
+    "module": "blob_writer.js",
+    "types": "definitions.d.ts",
+    "files": [
+        "blob_writer.*",
+        "android/*.gradle",
+        "android/gradle/wrapper/gradle-wrapper.properties",
+        "android/gradle.properties",
+        "android/proguard-rules.pro",
+        "android/src/main/",
+        "ios/Plugin/Plugin.*",
+        "ios/Podfile*",
+        "ios/Plugin/Info.plist",
+        "CapacitorBlobWriter.podspec"
+    ],
+    "scripts": {
+        "build": "rollup -c",
+        "prepublishOnly": "npm run build"
+    },
+    "devDependencies": {
+        "rollup": "^2.33.3",
+        "rollup-plugin-node-resolve": "^5.2.0"
+    },
+    "peerDependencies": {
+        "@capacitor/core": "^3.0.0",
+        "@capacitor/filesystem": "^1.0.0"
+    },
+    "capacitor": {
+        "ios": {
+            "src": "ios"
+        },
+        "android": {
+            "src": "android"
+        }
     }
-  }
 }

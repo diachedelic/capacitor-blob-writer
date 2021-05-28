@@ -1,28 +1,22 @@
-import nodeResolve from 'rollup-plugin-node-resolve';
-import typescript from 'rollup-plugin-typescript2';
+import node_resolve from "rollup-plugin-node-resolve";
 
-export default {
-  input: 'src/index.ts',
-  output: [
-    {
-      file: 'dist/plugin.umd.js',
-      format: 'umd',
-      name: 'capacitorBlobWriter',
-      sourcemap: true,
-      globals: {
-        '@capacitor/core': 'capacitorExports',
-      },
-    },
-
-    {
-      file: 'dist/plugin.esm.js',
-      format: 'es',
-      sourcemap: true,
-    },
-  ],
-  external: ['@capacitor/core'],
-  plugins: [
-    nodeResolve(),
-    typescript(),
-  ],
-};
+export default Object.freeze({
+    input: "blob_writer.js",
+    output: [
+        {
+            file: "blob_writer.umd.js",
+            format: "umd",
+            name: "capacitor_blob_writer",
+            sourcemap: true,
+            globals: {
+                "@capacitor/core": "capacitorExports",
+                "@capacitor/filesystem": "capacitorFilesystem"
+            }
+        }
+    ],
+    external: [
+        "@capacitor/core",
+        "@capacitor/filesystem"
+    ],
+    plugins: [node_resolve()]
+});

@@ -48,11 +48,11 @@ public class BlobWriter extends Plugin {
     }
 
     @PluginMethod()
-    public void getConfig(PluginCall call) {
+    public void get_config(PluginCall call) {
         if (this.server != null) {
             JSObject ret = new JSObject();
-            ret.put("baseUrl", "http://localhost:" + this.server.getListeningPort());
-            ret.put("authToken", this.server.getAuthToken());
+            ret.put("base_url", "http://localhost:" + this.server.getListeningPort());
+            ret.put("auth_token", this.server.getAuthToken());
             call.resolve(ret);
         } else {
             call.reject("Server not running", "server_down");

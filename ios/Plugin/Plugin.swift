@@ -97,7 +97,7 @@ public class BlobWriter: CAPPlugin {
     }
   }
   
-  @objc func getConfig(_ call: CAPPluginCall) {
+  @objc func get_config(_ call: CAPPluginCall) {
     if (_server?.serverURL != nil && _server!.isRunning) {
       var baseUrl = _server!.serverURL!.absoluteString
       
@@ -113,8 +113,8 @@ public class BlobWriter: CAPPlugin {
       let authToken = _authPassword
       
       call.resolve([
-        "baseUrl": baseUrl,
-        "authToken": authToken
+        "base_url": baseUrl,
+        "auth_token": authToken
       ])
     } else {
       call.reject("BlobWriter server not running", "server_down")
