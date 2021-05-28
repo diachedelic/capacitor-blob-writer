@@ -155,7 +155,7 @@ The plugin falls back to `Filesystem.appendFile` in the browser, so these result
 
 ### v1.0.0
 - BREAKING: `write_blob` is now the default export of the capacitor-blob-writer package.
-- BREAKING: The URI which `write_blob` returns is now prefixed by "file://", as is consistent with Filesystem.writeFile. Previously it was an absolute path.
+- BREAKING: `write_blob` returns a string, not an object.
 - BREAKING: The `data` option has been renamed `blob`.
 - BREAKING: The `fallback` option has been removed. Now, fallback mode can not be turned off. However you can still detect when fallback mode has been triggered by supplying an `on_fallback` function in the options.
 - BREAKING: Support for Capacitor v2, and hence iOS v11, has been dropped.
