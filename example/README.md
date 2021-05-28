@@ -1,5 +1,5 @@
-# Example app
-For development of this plugin.
+# Demo
+Demonstrates the use of the 'capacitor-blob-writer' plugin.
 
 ## Instructions
 
