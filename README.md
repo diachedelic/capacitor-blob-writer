@@ -68,7 +68,7 @@ Different versions of the plugin support different versions of Capacitor:
 | v2         | v0.2   |
 | v3         | v1     |
 
-Read the documentation for v0.3 [here](https://github.com/diachedelic/capacitor-blob-writer/tree/0.2.x). See the changelog below for breaking changes.
+Read the documentation for v0.2 [here](https://github.com/diachedelic/capacitor-blob-writer/tree/0.2.x). See the changelog below for breaking changes.
 
 ```sh
 npm install capacitor-blob-writer
