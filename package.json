@@ -22,11 +22,11 @@
   "files": [
     "dist/",
     "android/*.gradle",
-    "android/proguard-rules.pro",
     "android/gradle/wrapper/gradle-wrapper.properties",
     "android/gradle.properties",
-    "ios/Plugin/Plugin.*",
+    "android/proguard-rules.pro",
     "android/src/main/",
+    "ios/Plugin/Plugin.*",
     "ios/Podfile*",
     "ios/Plugin/Info.plist",
     "CapacitorBlobWriter.podspec"
