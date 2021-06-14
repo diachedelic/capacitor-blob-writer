@@ -21,6 +21,7 @@
     "types": "definitions.d.ts",
     "files": [
         "blob_writer.*",
+        "definitions.d.ts",
         "android/*.gradle",
         "android/gradle/wrapper/gradle-wrapper.properties",
         "android/gradle.properties",
