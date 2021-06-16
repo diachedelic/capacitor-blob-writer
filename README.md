@@ -75,6 +75,10 @@ npm install capacitor-blob-writer
 npx cap update
 ```
 
+### iOS
+
+Run `Product -> Clean Build Folder` within Xcode if you experience weird runtime errors (#32).
+
 ### Android
 
 Create `res/xml/network_security_config.xml`, configure it to [allow cleartext](https://github.com/diachedelic/capacitor-blob-writer/issues/20) communication with the local BlobWriter server.
