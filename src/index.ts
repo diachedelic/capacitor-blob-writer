@@ -95,7 +95,7 @@ export async function writeFile(options: BlobWriteOptions): Promise<BlobWriteRes
     if (
       typeof options.fallback === 'function'
         ? options.fallback(err)
-        : options.fallback
+        : options.fallback !== false
     ) {
       if ((err as BlobWriterError).code !== 'NOT_IMPLEMENTED') {
         console.error(err)
