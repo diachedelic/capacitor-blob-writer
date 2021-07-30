@@ -4,10 +4,12 @@ import android.os.StrictMode;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.UUID;
 
@@ -111,8 +113,15 @@ public class BlobWriterServer extends NanoHTTPD {
 
                 // then move into place
                 if (!tmpFile.renameTo(destFile)) {
-                    Log.e(logTag, "failed to move file into place");
-                    return newCorsResponse(Response.Status.INTERNAL_ERROR, session);
+                    // File.renameTo() fails when files are in different mount point,
+                    // e.g.: attempting to copy between internal storage and an SD card.
+                    try {
+                        // Files.move(tmpFile.toPath(), destFile.toPath(), null); // REQUIRES ANDROID Q (API 26)
+                        moveFile(tmpFile, destFile);
+                    } catch (Exception ex) {
+                        Log.e(logTag, "failed to move file into place", ex);
+                        return newCorsResponse(Response.Status.INTERNAL_ERROR, session);
+                    }
                 }
             } catch (IOException ex) {
                 Log.e(logTag, "failed to write body stream to file", ex);
@@ -126,5 +135,13 @@ public class BlobWriterServer extends NanoHTTPD {
         }
 
         return newCorsResponse(Response.Status.METHOD_NOT_ALLOWED, session);
+    }
+
+    public static void moveFile(File srcFile, File desFile) throws IOException {
+        try (FileChannel outputChannel = new FileOutputStream(desFile).getChannel(); FileChannel inputChannel = new FileInputStream(srcFile).getChannel()) {
+            inputChannel.transferTo(0, inputChannel.size(), outputChannel);
+            inputChannel.close();
+            srcFile.delete();
+        }
     }
 }
