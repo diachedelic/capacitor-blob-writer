@@ -21,7 +21,8 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist/",
-    "android/*.gradle",
+    "android/build.gradle",
+    "android/settings.gradle",
     "android/gradle/wrapper/gradle-wrapper.properties",
     "android/gradle.properties",
     "android/proguard-rules.pro",
