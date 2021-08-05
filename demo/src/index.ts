@@ -162,7 +162,7 @@ async function runTests() {
     })
 
     // alternate directory
-    await testWrite({ directory: Directory.Cache })
+    await testWrite({ directory: Directory.External })
 
     // write multiple files concurrently
     await Promise.all([
