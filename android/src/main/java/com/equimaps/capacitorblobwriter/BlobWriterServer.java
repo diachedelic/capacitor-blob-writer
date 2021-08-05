@@ -4,10 +4,12 @@ import android.os.StrictMode;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,9 +77,6 @@ public class BlobWriterServer extends NanoHTTPD {
             File destFile = new File(destPath);
 
             try {
-                InputStream in = session.getInputStream();
-                OutputStream out = null;
-
                 // write input stream to temp file
                 String tmpName = UUID.randomUUID().toString();
                 File tmpFile = File.createTempFile(tmpName, null, tmpDir);
@@ -85,22 +84,19 @@ public class BlobWriterServer extends NanoHTTPD {
 
                 // any smaller than this and performance suffers noticeably on my Samsung A5
                 int chunkSize = 512 * 1024;
-
+                byte[] buf = new byte[chunkSize];
+                int bytesRead;
+                long totalBytesRead = 0;
+                InputStream in = session.getInputStream();
+                OutputStream out = new FileOutputStream(tmpFile);
                 try {
-                    out = new FileOutputStream(tmpFile);
-                    byte[] buf = new byte[chunkSize];
-                    int bytesRead;
-                    long totalBytesRead = 0;
-
                     // reading from a finished input stream causes a socket timeout error
                     while (totalBytesRead < contentLength && (bytesRead = in.read(buf)) > 0) {
                         out.write(buf, 0, bytesRead);
                         totalBytesRead += bytesRead;
                     }
                 } finally {
-                    if (out != null) {
-                        out.close();
-                    }
+                    out.close();
                 }
 
                 List<String> recursiveParam = session.getParameters().get("recursive");
@@ -109,13 +105,29 @@ public class BlobWriterServer extends NanoHTTPD {
                     destFile.getParentFile().mkdirs();
                 }
 
-                // then move into place
+                // Move the file into place.
                 if (!tmpFile.renameTo(destFile)) {
-                    Log.e(logTag, "failed to move file into place");
-                    return newCorsResponse(Response.Status.INTERNAL_ERROR, session);
+                    // If 'tmpFile' and 'destFile' exist on different mount points, 'renameTo' will
+                    // fail. Let's try an alternative strategy.
+
+                    // The simpler approach, using the 'move' method, requires Android Q (API level
+                    // 26). For backwards compatibility, we create some "channels" and use the
+                    // 'transferTo' method instead.
+
+                    // Files.move(tmpFile.toPath(), destFile.toPath(), null);
+
+                    FileChannel tmpChannel = new FileInputStream(tmpFile).getChannel();
+                    FileChannel destChannel = new FileOutputStream(destFile).getChannel();
+                    try {
+                        tmpChannel.transferTo(0, tmpChannel.size(), destChannel);
+                    } finally {
+                        tmpChannel.close();
+                        destChannel.close();
+                        tmpFile.delete();
+                    }
                 }
-            } catch (IOException ex) {
-                Log.e(logTag, "failed to write body stream to file", ex);
+            } catch (Exception ex) {
+                Log.e(logTag, "failed to write file", ex);
                 return newCorsResponse(Response.Status.INTERNAL_ERROR, session);
             }
 
