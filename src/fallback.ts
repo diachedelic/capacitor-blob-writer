@@ -1,7 +1,11 @@
 import { Plugins, FilesystemDirectory } from '@capacitor/core';
 const { Filesystem } = Plugins;
 
-const chunkSize = 256 * 1024;
+// By choosing a chunk size which is a multiple of 3, we avoid a bug in
+// Filesystem.appendFile, only on the web platform, which corrupts files by
+// inserting Base64 padding characters within the file. See
+// https://github.com/ionic-team/capacitor-plugins/issues/649.
+const chunkSize = 3 * 128 * 1024;
 
 function arrayBufferToBase64(buffer: ArrayBuffer) {
   const bytes = new Uint8Array(buffer);
