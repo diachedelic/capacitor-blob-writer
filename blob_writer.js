@@ -22,7 +22,13 @@ function append_blob(directory, path, blob) {
     if (blob.size === 0) {
         return Promise.resolve();
     }
-    const chunk_size = 256 * 1024;
+
+// By choosing a chunk size which is a multiple of 3, we avoid a bug in
+// Filesystem.appendFile, only on the web platform, which corrupts files by
+// inserting Base64 padding characters within the file. See
+// https://github.com/ionic-team/capacitor-plugins/issues/649.
+
+    const chunk_size = 3 * 128 * 1024;
     const chunk_blob = blob.slice(0, chunk_size);
 
 // Read the Blob as an ArrayBuffer, then append it to the file on disk.
