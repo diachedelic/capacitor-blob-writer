@@ -131,19 +131,21 @@ I have compared the performance & stability of `Filesystem.writeFile` with `writ
 - [1] Crashes the WKWebView, which immediately reloads the page
 - [2] `Failed to load resource: WebKit encountered an internal error`
 
-### Google Chrome (MacBook Pro 2012)
-The plugin falls back to `Filesystem.appendFile` in the browser, so these results should be approximately equal.
+### Google Chrome (Desktop FX-4350)
+The plugin puts your blob directly[1][2] into indexedDB storage if your browser supports that, otherwise it falls back to `Filesystem.appendFile`.
 
 | Size          | Filesystem       | BlobWriter          |
 |---------------|------------------|---------------------|
-| 1 kilobyte    | 46ms             | 45ms                |
-| 1 megabyte    | 113ms            | 105ms               |
-| 8 megabytes   | 1.5s             | 1.3s                |
-| 32 megabytes  | 6.7s             | 5.9s                |
-| 64 megabytes  | 12.5s            | 16.7s               |
-| 512 megabytes | Error[1]         | Error[1]            |
+| 1 kilobyte    | 4ms              | 9ms                 |
+| 1 megabyte    | 180ms            | 16ms                |
+| 8 megabytes   | 1.5s             | 43ms                |
+| 32 megabytes  | 5.2s             | 141ms               |
+| 64 megabytes  | 10.5s            | 0.2s                |
+| 512 megabytes | Error[3]         | 1.1s                |
 
-- [1] `DOMException: The serialized keys and/or value are too large`
+- [1] Data returned from `Filesystem.readFile` is your pure blob (not base64 encoded)
+- [2] The returned uri is created with `URL.createObjectURL` from your blob (e.g. `blob:http://localhost/189603f7-b6e7-40f2-92e4-466dc875633b`)
+- [3] `DOMException: The serialized keys and/or value are too large`
 
 ## Changelog
 
