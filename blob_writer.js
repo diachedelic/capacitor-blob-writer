@@ -46,6 +46,52 @@ function append_blob(directory, path, blob) {
     });
 }
 
+function update_blob_content(directory, relative, blob) {
+	const indexedDB = window.indexedDB ||
+        window.mozIndexedDB ||
+        window.webkitIndexedDB ||
+        window.msIndexedDB;
+
+	return new Promise((resolve, reject) => {
+		const connection = indexedDB.open("Disc");
+		const fail = ({ target }) => reject(target);
+
+		connection.onerror = fail;
+		connection.onsuccess = ({ target }) => {
+			const db = target.result;
+
+			const transaction = db.transaction("FileStorage", "readwrite");
+			transaction.onerror = fail;
+
+			const store = transaction.objectStore("FileStorage");
+			const path = `/${directory}/${relative.replace(/^\//, "")}`;
+
+			const request = store.get(path);
+			request.onerror = fail;
+			request.onsuccess = ({ target }) => {
+				const request = store.put({
+					...target.result,
+					size: blob.size,
+					content: blob,
+				});
+				request.onerror = fail;
+				request.onsuccess = () => {
+					const request = store.get(path);
+					request.onerror = fail;
+					request.onsuccess = (event) => {
+						const { target } = event;
+						if (!target) fail(event);
+						const { result } = target;
+						if (!result) fail(event);
+						const { content } = result;
+						if (!content) fail(event);
+						return resolve(URL.createObjectURL(content));
+					};
+				};
+			};
+		};
+	});
+}
 
 function write_file_via_bridge({
     path,
@@ -62,11 +108,12 @@ function write_file_via_bridge({
         recursive,
         data: ""
     }).then(function ({uri}) {
+        return update_blob_content(directory, path, blob).catch(async () => {
+            console.warn("Unable to set blob content. Using base64 fallback...");
 
 // Now write the file incrementally so we do not exceed our memory limits when
 // attempting to Base64 encode the entire Blob at once.
-
-        return append_blob(directory, path, blob).then(function () {
+            await append_blob(directory, path, blob);
             return uri;
         });
     });
