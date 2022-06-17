@@ -85,6 +85,20 @@ function makeUniformBlob(byteLength: number) {
     return blob
 }
 
+async function resolveUri({
+    path,
+    directory = Directory.Data
+}: {path: string, directory: Directory}) {
+    if (Capacitor.getPlatform() == "web") {
+        const result = await Filesystem.readFile({ path, directory })
+        const blob = result.data as any as Blob
+        return URL.createObjectURL(blob)
+    }
+
+    const { uri } = await Filesystem.getUri({ path, directory })
+    return Capacitor.convertFileSrc(uri)
+}
+
 async function testWrite({
     path = `${Math.random()}.bin`,
     blob = makeRandomBlob(10),
@@ -94,7 +108,7 @@ async function testWrite({
     // write
     const start = Date.now()
     let fallbackError
-    const uri = await write_blob({
+    await write_blob({
         path,
         directory,
         blob,
@@ -104,36 +118,28 @@ async function testWrite({
         }
     })
 
-    if (fallbackError !== undefined && Capacitor.platform !== 'web') {
+    if (fallbackError !== undefined && Capacitor.getPlatform() !== 'web') {
         throw fallbackError
     }
 
     log(`wrote ${blob.size} bytes in ${Date.now() - start}ms`)
 
     // read
-    const fileURL = Capacitor.convertFileSrc(uri)
-    let fileBlob
+    const fileURL = await resolveUri({ path, directory })
+    const fileResponse = await fetch(fileURL)
 
-    if (fileURL.includes('://')) {
-        const fileResponse = await fetch(fileURL)
-
-        if (fileResponse.status === 404) {
-            throw new Error('File not found')
-        } else if (fileResponse.status !== 200) {
-            throw new Error('bad status')
-        }
-
-        fileBlob = await fileResponse.blob()
-    } else {
-        // web environment does not yet support HTTP access to files
-        const { data } = await Filesystem.readFile({ path, directory })
-        const url = 'data:;base64,' + data
-        const res = await fetch(url)
-        fileBlob = await res.blob()
+    if (fileResponse.status === 404) {
+        throw new Error('File not found')
+    } else if (fileResponse.status !== 200) {
+        throw new Error('bad status')
     }
+
+    const fileBlob = await fileResponse.blob()
 
     // compare
     await compareBlobs(blob, fileBlob)
+    // avoid memory leaks
+    URL.revokeObjectURL(fileURL);
 }
 
 async function runTests() {
