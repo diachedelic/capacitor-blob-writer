@@ -1,4 +1,4 @@
-/*jslint browser */
+/*jslint browser this */
 import {Capacitor, registerPlugin} from "@capacitor/core";
 import {Filesystem} from "@capacitor/filesystem";
 
@@ -47,50 +47,59 @@ function append_blob(directory, path, blob) {
 }
 
 function update_blob_content(directory, relative, blob) {
-	const indexedDB = window.indexedDB ||
-        window.mozIndexedDB ||
-        window.webkitIndexedDB ||
-        window.msIndexedDB;
 
-	return new Promise((resolve, reject) => {
-		const connection = indexedDB.open("Disc");
-		const fail = ({ target }) => reject(target);
+    return new Promise(function (resolve, reject) {
+        function fail() {
+            reject(this.error);
+        }
 
-		connection.onerror = fail;
-		connection.onsuccess = ({ target }) => {
-			const db = target.result;
+        const connection = window.indexedDB.open("Disc");
+        connection.onerror = fail;
+        connection.onsuccess = function () {
+            const db = connection.result;
 
-			const transaction = db.transaction("FileStorage", "readwrite");
-			transaction.onerror = fail;
+            const transaction = db.transaction("FileStorage", "readwrite");
+            transaction.onerror = fail;
 
-			const store = transaction.objectStore("FileStorage");
-			const path = `/${directory}/${relative.replace(/^\//, "")}`;
+            const store = transaction.objectStore("FileStorage");
+            const path = `/${directory}/${relative.replace(/^\//, "")}`;
 
-			const request = store.get(path);
-			request.onerror = fail;
-			request.onsuccess = ({ target }) => {
-				const request = store.put({
-					...target.result,
-					size: blob.size,
-					content: blob,
-				});
-				request.onerror = fail;
-				request.onsuccess = () => {
-					const request = store.get(path);
-					request.onerror = fail;
-					request.onsuccess = (event) => {
-						const { target } = event;
-						if (!target) fail(event);
-						const { result } = target;
-						if (!result) fail(event);
-						const { content } = result;
-						if (!content) fail(event);
-						return resolve(URL.createObjectURL(content));
-					};
-				};
-			};
-		};
-	});
+            const load = store.get(path);
+            load.onerror = fail;
+            load.onsuccess = function () {
+                const put = store.put(Object.assign(load.result, {
+                    size: blob.size,
+                    content: blob
+                }));
+                put.onerror = fail;
+                put.onsuccess = function () {
+                    resolve(undefined);
+                };
+            };
+        };
+    });
+}
+
+function write_file_via_indexeddb({
+    path,
+    directory,
+    blob,
+    recursive
+}) {
+
+// Firstly, create the file entry in the database.
+
+    return Filesystem.writeFile({
+        directory,
+        path,
+        recursive,
+        data: ""
+    }).then(function () {
+
+// Now update the content of the file entry
+
+        return update_blob_content(directory, path, blob);
+    });
 }
 
 function write_file_via_bridge({
@@ -107,15 +116,12 @@ function write_file_via_bridge({
         path,
         recursive,
         data: ""
-    }).then(function ({uri}) {
-        return update_blob_content(directory, path, blob).catch(async () => {
-            console.warn("Unable to set blob content. Using base64 fallback...");
+    }).then(function () {
 
 // Now write the file incrementally so we do not exceed our memory limits when
 // attempting to Base64 encode the entire Blob at once.
-            await append_blob(directory, path, blob);
-            return uri;
-        });
+
+        return append_blob(directory, path, blob);
     });
 }
 
@@ -127,8 +133,8 @@ function write_blob(options) {
         recursive,
         on_fallback
     } = options;
-    if (Capacitor.platform !== "ios" && Capacitor.platform !== "android") {
-        return write_file_via_bridge(options);
+    if (Capacitor.getPlatform() === "web") {
+        return write_file_via_indexeddb(options);
     }
     return Promise.all([
         BlobWriter.get_config(),
