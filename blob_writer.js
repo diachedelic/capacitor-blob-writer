@@ -46,9 +46,30 @@ function append_blob(directory, path, blob) {
     });
 }
 
-function update_blob_content(directory, relative, blob) {
+function workaround_safari_bug() {
+    // A workaround for https://bugs.webkit.org/show_bug.cgi?id=226547
+    const is_safari = (/Safari\//).test(window.navigator.userAgent) &&
+    !(/Chrom(e|ium)\//).test(window.navigator.userAgent);
 
-    return new Promise(function (resolve, reject) {
+    if (!is_safari) {
+        return Promise.resolve();
+    }
+
+    let interval;
+    return (new Promise(function (resolve, reject) {
+        function try_idb() {
+            window.indexedDB.databases().then(resolve, reject);
+        }
+
+        interval = setInterval(try_idb, 100);
+        try_idb();
+    })).then(function () {
+        clearInterval(interval);
+    });
+}
+
+function update_blob_content(directory, relative, blob) {
+    const promise = new Promise(function (resolve, reject) {
         function fail() {
             reject(this.error);
         }
@@ -77,6 +98,10 @@ function update_blob_content(directory, relative, blob) {
                 };
             };
         };
+    });
+
+    return workaround_safari_bug().then(function () {
+        return promise;
     });
 }
 
