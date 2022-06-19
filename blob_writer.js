@@ -1,4 +1,4 @@
-/*jslint browser */
+/*jslint browser this */
 import {Capacitor, registerPlugin} from "@capacitor/core";
 import {Filesystem} from "@capacitor/filesystem";
 
@@ -46,6 +46,86 @@ function append_blob(directory, path, blob) {
     });
 }
 
+function workaround_safari_bug() {
+    // A workaround for https://bugs.webkit.org/show_bug.cgi?id=226547
+    const is_safari = (/Safari\//).test(window.navigator.userAgent) &&
+    !(/Chrom(e|ium)\//).test(window.navigator.userAgent);
+
+    if (!is_safari) {
+        return Promise.resolve();
+    }
+
+    let interval;
+    return (new Promise(function (resolve, reject) {
+        function try_idb() {
+            window.indexedDB.databases().then(resolve, reject);
+        }
+
+        interval = setInterval(try_idb, 100);
+        try_idb();
+    })).then(function () {
+        clearInterval(interval);
+    });
+}
+
+function update_blob_content(directory, relative, blob) {
+    const promise = new Promise(function (resolve, reject) {
+        function fail() {
+            reject(this.error);
+        }
+
+        const connection = window.indexedDB.open("Disc");
+        connection.onerror = fail;
+        connection.onsuccess = function () {
+            const db = connection.result;
+
+            const transaction = db.transaction("FileStorage", "readwrite");
+            transaction.onerror = fail;
+
+            const store = transaction.objectStore("FileStorage");
+            const path = `/${directory}/${relative.replace(/^\//, "")}`;
+
+            const load = store.get(path);
+            load.onerror = fail;
+            load.onsuccess = function () {
+                const put = store.put(Object.assign(load.result, {
+                    size: blob.size,
+                    content: blob
+                }));
+                put.onerror = fail;
+                put.onsuccess = function () {
+                    resolve(undefined);
+                };
+            };
+        };
+    });
+
+    return workaround_safari_bug().then(function () {
+        return promise;
+    });
+}
+
+function write_file_via_indexeddb({
+    path,
+    directory,
+    blob,
+    recursive
+}) {
+
+// Firstly, create the file entry in the database.
+
+    return Filesystem.writeFile({
+        directory,
+        path,
+        recursive,
+        data: ""
+    }).then(function () {
+
+// Now update the content of the file entry
+
+        return update_blob_content(directory, path, blob);
+    });
+}
 
 function write_file_via_bridge({
     path,
@@ -61,14 +141,12 @@ function write_file_via_bridge({
         path,
         recursive,
         data: ""
-    }).then(function ({uri}) {
+    }).then(function () {
 
 // Now write the file incrementally so we do not exceed our memory limits when
 // attempting to Base64 encode the entire Blob at once.
 
-        return append_blob(directory, path, blob).then(function () {
-            return uri;
-        });
+        return append_blob(directory, path, blob);
     });
 }
 
@@ -80,8 +158,8 @@ function write_blob(options) {
         recursive,
         on_fallback
     } = options;
-    if (Capacitor.platform !== "ios" && Capacitor.platform !== "android") {
-        return write_file_via_bridge(options);
+    if (Capacitor.getPlatform() === "web") {
+        return write_file_via_indexeddb(options);
     }
     return Promise.all([
         BlobWriter.get_config(),

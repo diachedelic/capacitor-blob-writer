@@ -1,5 +1,5 @@
 # capacitor-blob-writer
-A faster, more stable alternative to @capacitor/filesystem's `Filesystem.writeFile` for writing Blobs to the filesystem. While the plugin may be used by all platforms for improved stability, only iOS and Android benefit from significantly faster writes.
+A faster, more stable alternative to @capacitor/filesystem's `Filesystem.writeFile` for writing Blobs to the filesystem.
 
 ## Usage
 ```javascript
@@ -49,13 +49,37 @@ write_blob({
     on_fallback(error) {
         console.error(error);
     }
-}).then(function (my_video_uri) {
+}).then(async function () {
 
-// You can make use of the new file's URI immediately.
+// Obtain the URI for your platform
 
-  const video_element = document.createElement("video");
-  video_element.src = Capacitor.convertFileSrc(my_video_uri);
-  document.body.appendChild(video_element);
+    let my_video_uri;
+    if (Capacitor.getPlatform() == "web") {
+        const { data } = await Filesystem.readFile({ path, directory })
+        my_video_uri = URL.createObjectURL(data)
+    } else {
+        const { uri } = await Filesystem.getUri({ path, directory })
+        my_video_uri = Capacitor.convertFileSrc(uri)
+    }
+
+// Now you can use it in your video element
+
+    const video_element = document.createElement("video");
+    video_element.src = Capacitor.convertFileSrc(my_video_uri);
+    document.body.appendChild(video_element);
+
+// Do not forget to revoke the uri when you are done with it!
+// This is important to avoid memory leaks!
+
+    video_element.onended = function () {
+
+// The platform check is optional since browsers do not complain
+// when an invalid uri is provided.
+
+        if (Capacitor.getPlatform() == "web") {
+            URL.revokeObjectURL(my_video_uri);
+        }
+    }
 });
 ```
 
@@ -89,16 +113,23 @@ Configure `AndroidManifest.xml` to [allow cleartext](https://github.com/diachede
 ```
 
 ## How it works
+### Web
+For the web platform the plugin creates an empty indexedDB entry with `Filesystem.writeFile`. Then it replaces it's size and content with the provided blob, completely avoiding base64 encoding. Therefore, significantly improving the writing speed.
+
+There is a caveat though. If you use `Filesystem.readFile`, you will get a **Blob** as your data back instead of a base64 **string**, since your data has never been encoded in the first place.
+
+### iOS / Android
 When the plugin is loaded, an HTTP server is started on a random port, which streams authenticated PUT requests to disk, then moves them into place. The `write_blob` function makes the actual `fetch` call and handles the necessary authentication. Because browsers are highly optimised for network operations, this write does not block the UI.
 
 I had dreamed of having the WebView intercept the PUT request and write the request's body to disk. Incredibly, neither iOS nor Android's webview are capable of correctly reading request bodies, due to [this](https://issuetracker.google.com/issues/36918490) and [this](https://bugs.webkit.org/show_bug.cgi?id=179077). Hence an actual webserver will be required for the forseeable future.
 
-### Fallback mode
+### Fallback mode (iOS / Android)
 There are times when `write_blob` inexplicably fails to communicate with the webserver, or the webserver fails to write the file. A fallback mode is provided, which invokes an alternative strategy if an error occurs. In fallback mode, the Blob is split into chunks and serially concatenated on disk using `Filesystem.appendFile`. While slower than `Filesystem.writeFile`, this strategy avoids Base64-encoding the entire Blob at once, making it stable for large Blobs.
 
 ## Known limitations & issues
 - potential security risk (only as secure as [GCDWebServer](https://github.com/swisspol/GCDWebServer)/[nanohttpd](https://github.com/NanoHttpd/nanohttpd)), and also #12
 - no `append` option yet (see #11)
+- developers have to handle the URIs for different platforms themselves (see [example](#usage))
 
 ## Benchmarks
 I have compared the performance & stability of `Filesystem.writeFile` with `write_blob` on my devices, see `demo/src/index.ts` for more details.
@@ -131,19 +162,20 @@ I have compared the performance & stability of `Filesystem.writeFile` with `writ
 - [1] Crashes the WKWebView, which immediately reloads the page
 - [2] `Failed to load resource: WebKit encountered an internal error`
 
-### Google Chrome (MacBook Pro 2012)
-The plugin falls back to `Filesystem.appendFile` in the browser, so these results should be approximately equal.
+### Google Chrome (Desktop FX-4350)
+The plugin puts your blob directly[1] into the indexedDB storage.
 
 | Size          | Filesystem       | BlobWriter          |
 |---------------|------------------|---------------------|
-| 1 kilobyte    | 46ms             | 45ms                |
-| 1 megabyte    | 113ms            | 105ms               |
-| 8 megabytes   | 1.5s             | 1.3s                |
-| 32 megabytes  | 6.7s             | 5.9s                |
-| 64 megabytes  | 12.5s            | 16.7s               |
-| 512 megabytes | Error[1]         | Error[1]            |
+| 1 kilobyte    | 4ms              | 9ms                 |
+| 1 megabyte    | 180ms            | 16ms                |
+| 8 megabytes   | 1.5s             | 43ms                |
+| 32 megabytes  | 5.2s             | 141ms               |
+| 64 megabytes  | 10.5s            | 0.2s                |
+| 512 megabytes | Error[2]         | 1.1s                |
 
-- [1] `DOMException: The serialized keys and/or value are too large`
+- [1] Data returned from `Filesystem.readFile` is your pure blob (not base64 encoded)
+- [2] `DOMException: The serialized keys and/or value are too large`
 
 ## Changelog
 
