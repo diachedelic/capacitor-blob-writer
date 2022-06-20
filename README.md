@@ -84,7 +84,7 @@ if (Capacitor.getPlatform() === "web") {
 // true of files written using Filesystem.writeFile, where the data is
 // retrieved as a string. A URL is created from the Blob.
 
-        const url = Object.createObjectURL(data);
+        const url = URL.createObjectURL(data);
         video_element.src = url;
 
 // To avoid memory leaks, the URL should be revoked when it is no longer
@@ -92,7 +92,7 @@ if (Capacitor.getPlatform() === "web") {
 
         video_element.onended = function () {
             video_element.remove();
-            Object.revokeObjectURL(url);
+            URL.revokeObjectURL(url);
         };
     });
 } else {
