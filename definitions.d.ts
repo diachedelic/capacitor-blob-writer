@@ -4,6 +4,7 @@ export interface BlobWriteOptions {
     path: string;
     directory?: Directory;
     blob: Blob;
+    fast_mode?: boolean;
     recursive?: boolean;
     on_fallback?: (error: Error) => void;
 }

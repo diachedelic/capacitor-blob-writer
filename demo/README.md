@@ -4,9 +4,7 @@ Demonstrates the use of the 'capacitor-blob-writer' plugin.
 ## Instructions
 
 ```
-npm run watch &
-
-cd example && \
+cd demo && \
   npm i && \
   npx cap update && \
   npx cap copy &&

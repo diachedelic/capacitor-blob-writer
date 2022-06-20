@@ -11,14 +11,11 @@ function log (msg: string) {
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer) {
-    var binary = ''
-    var bytes = new Uint8Array(buffer)
-    var len = bytes.byteLength
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i])
-    }
-    return btoa(binary)
+    return window.btoa(
+        String.fromCharCode(...new Uint8Array(buffer))
+    )
 }
+
 async function compareBlobs(...blobs: Blob[]) {
     const buffers = await Promise.all(
         blobs.map(
@@ -69,7 +66,7 @@ function makeUniformBlob(byteLength: number) {
     let position = 0
     while (position < byteLength) {
         const size = Math.min(maxChunkSize, byteLength - position)
-        const bytes = new Uint8Array(size).fill(0)
+        const bytes = new Uint8Array(size)
 
         blob = new Blob([blob, bytes.buffer], {
             type: 'application/octet-stream'
@@ -91,8 +88,7 @@ async function resolveUri({
 }: {path: string, directory: Directory}) {
     if (Capacitor.getPlatform() == "web") {
         const result = await Filesystem.readFile({ path, directory })
-        const blob = result.data as any as Blob
-        return URL.createObjectURL(blob)
+        return URL.createObjectURL(result.data as any as Blob)
     }
 
     const { uri } = await Filesystem.getUri({ path, directory })
@@ -112,13 +108,14 @@ async function testWrite({
         path,
         directory,
         blob,
+        fast_mode: true,
         recursive,
         on_fallback(error: any) {
             fallbackError = error
         }
     })
 
-    if (fallbackError !== undefined && Capacitor.getPlatform() !== 'web') {
+    if (fallbackError !== undefined) {
         throw fallbackError
     }
 
@@ -212,6 +209,7 @@ async function runBenchmark() {
                     path,
                     directory,
                     blob,
+                    fast_mode: true
                 })
             }
 

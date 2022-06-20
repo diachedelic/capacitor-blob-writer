@@ -1,108 +1,14 @@
-/*jslint browser this */
+/*jslint browser */
+
 import {Capacitor, registerPlugin} from "@capacitor/core";
 import {Filesystem} from "@capacitor/filesystem";
 
 const BlobWriter = registerPlugin("BlobWriter");
 
 function array_buffer_to_base64(buffer) {
-    const bytes = new Uint8Array(buffer);
-    let binary_string = "";
-    let byte_nr = 0;
-    while (true) {
-        if (byte_nr >= bytes.byteLength) {
-            break;
-        }
-        binary_string += String.fromCharCode(bytes[byte_nr]);
-        byte_nr += 1;
-    }
-    return window.btoa(binary_string);
-}
-
-function append_blob(directory, path, blob) {
-    if (blob.size === 0) {
-        return Promise.resolve();
-    }
-
-// By choosing a chunk size which is a multiple of 3, we avoid a bug in
-// Filesystem.appendFile, only on the web platform, which corrupts files by
-// inserting Base64 padding characters within the file. See
-// https://github.com/ionic-team/capacitor-plugins/issues/649.
-
-    const chunk_size = 3 * 128 * 1024;
-    const chunk_blob = blob.slice(0, chunk_size);
-
-// Read the Blob as an ArrayBuffer, then append it to the file on disk.
-
-    return new window.Response(chunk_blob).arrayBuffer().then(
-        function append_chunk_to_file(buffer) {
-            return Filesystem.appendFile({
-                directory,
-                path,
-                data: array_buffer_to_base64(buffer)
-            });
-        }
-    ).then(function write_remaining() {
-        return append_blob(directory, path, blob.slice(chunk_size));
-    });
-}
-
-function workaround_safari_bug() {
-    // A workaround for https://bugs.webkit.org/show_bug.cgi?id=226547
-    const is_safari = (/Safari\//).test(window.navigator.userAgent) &&
-    !(/Chrom(e|ium)\//).test(window.navigator.userAgent);
-
-    if (!is_safari) {
-        return Promise.resolve();
-    }
-
-    let interval;
-    return (new Promise(function (resolve, reject) {
-        function try_idb() {
-            window.indexedDB.databases().then(resolve, reject);
-        }
-
-        interval = setInterval(try_idb, 100);
-        try_idb();
-    })).then(function () {
-        clearInterval(interval);
-    });
-}
-
-function update_blob_content(directory, relative, blob) {
-    const promise = new Promise(function (resolve, reject) {
-        function fail() {
-            reject(this.error);
-        }
-
-        const connection = window.indexedDB.open("Disc");
-        connection.onerror = fail;
-        connection.onsuccess = function () {
-            const db = connection.result;
-
-            const transaction = db.transaction("FileStorage", "readwrite");
-            transaction.onerror = fail;
-
-            const store = transaction.objectStore("FileStorage");
-            const path = `/${directory}/${relative.replace(/^\//, "")}`;
-
-            const load = store.get(path);
-            load.onerror = fail;
-            load.onsuccess = function () {
-                const put = store.put(Object.assign(load.result, {
-                    size: blob.size,
-                    content: blob
-                }));
-                put.onerror = fail;
-                put.onsuccess = function () {
-                    resolve(undefined);
-                };
-            };
-        };
-    });
-
-    return workaround_safari_bug().then(function () {
-        return promise;
-    });
+    return window.btoa(
+        String.fromCharCode(...new Uint8Array(buffer))
+    );
 }
 
 function write_file_via_indexeddb({
@@ -112,7 +18,9 @@ function write_file_via_indexeddb({
     recursive
 }) {
 
-// Firstly, create the file entry in the database.
+// Firstly, create the file entry in the database. This populates a bunch of
+// properties on the entry, such as mtime, ctime and type, and also gives the
+// Filesystem plugin a chance to initialize its database.
 
     return Filesystem.writeFile({
         directory,
@@ -121,9 +29,31 @@ function write_file_via_indexeddb({
         data: ""
     }).then(function () {
 
-// Now update the content of the file entry
+// Now reach into IndexedDB and assign 'blob' to the file entry.
 
-        return update_blob_content(directory, path, blob);
+        return new Promise(function (resolve, reject) {
+            function fail(event) {
+                reject(event.target.error);
+            }
+            const connection = window.indexedDB.open("Disc");
+            connection.onerror = fail;
+            connection.onsuccess = function () {
+                const db = connection.result;
+                const transaction = db.transaction("FileStorage", "readwrite");
+                transaction.onerror = fail;
+                const store = transaction.objectStore("FileStorage");
+                const name = `/${directory}/${path.replace(/^\//, "")}`;
+                const load = store.get(name);
+                load.onsuccess = function () {
+                    load.result.size = blob.size;
+                    load.result.content = blob;
+                    const put = store.put(load.result);
+                    put.onsuccess = function () {
+                        resolve(undefined);
+                    };
+                };
+            };
+        });
     });
 }
 
@@ -134,19 +64,45 @@ function write_file_via_bridge({
     recursive
 }) {
 
-// Firstly, create & truncate the file.
+// Firstly, create or truncate the file.
 
     return Filesystem.writeFile({
         directory,
         path,
         recursive,
         data: ""
-    }).then(function () {
+    }).then(function consume_blob() {
 
-// Now write the file incrementally so we do not exceed our memory limits when
+// Now write the file incrementally so that we do not exhaust our memory in
 // attempting to Base64 encode the entire Blob at once.
 
-        return append_blob(directory, path, blob);
+        if (blob.size === 0) {
+            return Promise.resolve();
+        }
+
+// By choosing a chunk size which is a multiple of 3, we avoid a bug in
+// Filesystem.appendFile, only on the web platform, which corrupts files by
+// inserting Base64 padding characters within the file. See
+// https://github.com/ionic-team/capacitor-plugins/issues/649.
+
+        const chunk_size = 3 * 128 * 1024;
+        const chunk_blob = blob.slice(0, chunk_size);
+        blob = blob.slice(chunk_size);
+
+// Read the Blob as an ArrayBuffer, then append it to the file on disk.
+
+        return new Response(
+            chunk_blob
+        ).arrayBuffer(
+        ).then(function append_chunk_to_file(buffer) {
+            return Filesystem.appendFile({
+                directory,
+                path,
+                data: array_buffer_to_base64(buffer)
+            });
+        }).then(
+            consume_blob
+        );
     });
 }
 
@@ -155,38 +111,43 @@ function write_blob(options) {
         path,
         directory,
         blob,
+        fast_mode = false,
         recursive,
         on_fallback
     } = options;
     if (Capacitor.getPlatform() === "web") {
-        return write_file_via_indexeddb(options);
+        return (
+            fast_mode
+            ? write_file_via_indexeddb(options)
+            : write_file_via_bridge(options)
+        );
     }
     return Promise.all([
         BlobWriter.get_config(),
         Filesystem.getUri({path, directory})
-    ]).then(function on_success([config, file_info]) {
-        const {base_url, auth_token} = config;
+    ]).then(function ([config, file_info]) {
         const absolute_path = file_info.uri.replace("file://", "");
-        return Promise.all([
-            fetch(
-                base_url + absolute_path + (
-                    recursive
-                    ? "?recursive=true"
-                    : ""
-                ),
-                {
-                    headers: {authorization: auth_token},
-                    method: "put",
-                    body: blob
-                }
+        return fetch(
+            config.base_url + absolute_path + (
+                recursive
+                ? "?recursive=true"
+                : ""
             ),
-            Promise.resolve(file_info)
-        ]);
-    }).then(function ([response, file_info]) {
-        if (response.status !== 204) {
-            throw new Error("Bad HTTP status: " + response.status);
-        }
-        return file_info.uri;
+            {
+                headers: {authorization: config.auth_token},
+                method: "put",
+                body: blob
+            }
+        ).then(function (response) {
+            if (response.status !== 204) {
+                throw new Error("Bad HTTP status: " + response.status);
+            }
+
+// Producing a file URI is deprecated. In the next major version, the returned
+// Promise should resolve to undefined.
+
+            return file_info.uri;
+        });
     }).catch(function on_fail(error) {
         if (on_fallback !== undefined) {
             on_fallback(error);
