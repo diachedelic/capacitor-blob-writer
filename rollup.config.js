@@ -1,4 +1,4 @@
-import node_resolve from "rollup-plugin-node-resolve";
+import node_resolve from "@rollup/plugin-node-resolve";
 
 export default Object.freeze({
     input: "blob_writer.js",

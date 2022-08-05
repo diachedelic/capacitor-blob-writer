@@ -1,5 +1,5 @@
 import typescript from "rollup-plugin-typescript2";
-import node_resolve from "rollup-plugin-node-resolve";
+import node_resolve from "@rollup/plugin-node-resolve";
 
 export default Object.freeze({
     input: "src/index.ts",

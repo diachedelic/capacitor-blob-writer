@@ -38,12 +38,12 @@
         "prepublishOnly": "npm run build"
     },
     "devDependencies": {
-        "rollup": "^2.33.3",
-        "rollup-plugin-node-resolve": "^5.2.0"
+        "@rollup/plugin-node-resolve": "^13.3.0",
+        "rollup": "^2.77.2"
     },
     "peerDependencies": {
-        "@capacitor/core": "^3.0.0",
-        "@capacitor/filesystem": "^1.0.0"
+        "@capacitor/core": ">=3.0.0",
+        "@capacitor/filesystem": ">=1.0.0"
     },
     "capacitor": {
         "ios": {
