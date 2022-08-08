@@ -15,6 +15,13 @@ public class BlobWriter: CAPPlugin {
   private let _authUser = "app"
   
   @objc public override func load() {
+    // Add observers to listen to the app becoming active
+    // This is done to prevent GCDWebServer from crashing when the app gets launched in the background
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.addObserver(self, selector: #selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+  }
+   
+  private func startServer() {
     // listen for errors only
     GCDWebServer.setLogLevel(4)
     
@@ -149,5 +156,9 @@ public class BlobWriter: CAPPlugin {
     }
     
     return response
+  }
+   
+  @objc private func didBecomeActive() -> Void {
+    startServer()
   }
 }
