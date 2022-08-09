@@ -127,6 +127,15 @@ npx cap update
 
 ### iOS
 
+Configure `Info.plist` to permit communication with the local BlobWriter server. This step is necessary for Capacitor v4+.
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+</dict>
+```
+
 Run `Product -> Clean Build Folder` within Xcode if you experience weird runtime errors (#32).
 
 ### Android
