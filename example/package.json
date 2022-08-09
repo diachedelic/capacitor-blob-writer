@@ -5,11 +5,13 @@
     "watch": "rollup -cw"
   },
   "dependencies": {
+    "@capacitor/android": "^2.4.7",
     "@capacitor/cli": "^2.4.7",
     "@capacitor/core": "^2.4.7",
+    "@capacitor/ios": "^2.4.7",
     "capacitor-blob-writer": "../"
   },
   "devDependencies": {
-    "rollup": "^2.33.3"
+    "rollup": "^2.77.2"
   }
 }
