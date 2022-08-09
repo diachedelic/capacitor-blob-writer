@@ -8,6 +8,7 @@ document.body.appendChild(output)
 
 function log (msg: string) {
     output.innerHTML += `${msg}\n`
+    console.log(msg)
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer) {
@@ -111,6 +112,7 @@ async function testWrite({
         fast_mode: true,
         recursive,
         on_fallback(error: any) {
+            console.log(error.name, error.message);
             fallbackError = error
         }
     })
