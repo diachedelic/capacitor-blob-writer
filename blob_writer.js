@@ -7,7 +7,9 @@ const BlobWriter = registerPlugin("BlobWriter");
 
 function array_buffer_to_base64(buffer) {
     return window.btoa(
-        String.fromCharCode(...new Uint8Array(buffer))
+        Array.from(new Uint8Array(buffer)).map(function (byte) {
+            return String.fromCharCode(byte);
+        }).join("")
     );
 }
 
