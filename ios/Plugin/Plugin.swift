@@ -15,6 +15,23 @@ public class BlobWriter: CAPPlugin {
   private let _authUser = "app"
   
   @objc public override func load() {
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(startServer),
+      name: UIApplication.didBecomeActiveNotification,
+      object: nil
+    )
+    if UIApplication.shared.applicationState == .active {
+      startServer()
+    }
+  }
+
+  @objc private func startServer() {
+    if _server != nil {
+      // already started
+      return
+    }
+
     // listen for errors only
     GCDWebServer.setLogLevel(4)
     
@@ -74,7 +91,7 @@ public class BlobWriter: CAPPlugin {
         try server.start(options: [
           GCDWebServerOption_Port: port,
           GCDWebServerOption_BindToLocalhost: true,
-          GCDWebServerOption_AutomaticallySuspendInBackground: false,
+          GCDWebServerOption_AutomaticallySuspendInBackground: true,
 
           // unfortunately, Basic auth breaks CORS
           // pending https://github.com/swisspol/GCDWebServer/issues/479
