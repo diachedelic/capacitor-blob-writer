@@ -18,6 +18,9 @@
     "author": "James Diacono",
     "main": "blob_writer.umd.js",
     "module": "blob_writer.js",
+    "exports": {
+        ".": "./blob_writer.js"
+    },
     "types": "definitions.d.ts",
     "files": [
         "blob_writer.*",
