@@ -1,3 +1,4 @@
+shell.nix
 blob_writer.umd.js*
 
 .settings
