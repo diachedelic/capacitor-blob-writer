@@ -213,6 +213,9 @@ The following benchmarks compare the performance and stability of `Filesystem.wr
 
 ## Changelog
 
+### v1.1.10
+- Adds support for Capacitor v5.
+
 ### v1.1.1
 - Adds support for Capacitor v4.
 
