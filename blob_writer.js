@@ -5,6 +5,12 @@ import {Filesystem} from "@capacitor/filesystem";
 
 const BlobWriter = registerPlugin("BlobWriter");
 
+// The built-in CapacitorHttp plugin can be configured to monkey patch the
+// global 'fetch' function, but that forces 'blob' over the bridge which is
+// what we're trying to avoid. We attempt to subvert the monkey patching.
+
+const real_fetch = window.CapacitorWebFetch || window.fetch;
+
 function array_buffer_to_base64(buffer) {
     return window.btoa(
         Array.from(new Uint8Array(buffer)).map(function (byte) {
@@ -129,7 +135,7 @@ function write_blob(options) {
         Filesystem.getUri({path, directory})
     ]).then(function ([config, file_info]) {
         const absolute_path = file_info.uri.replace("file://", "");
-        return fetch(
+        return real_fetch(
             config.base_url + absolute_path + (
                 recursive
                 ? "?recursive=true"
