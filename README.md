@@ -126,6 +126,8 @@ npm install capacitor-blob-writer
 npx cap update
 ```
 
+The BlobWriter plugin calls the global `fetch` function to transmit blob data directly to the local BlobWriter server, without serializing it to Base64. The built-in CapacitorHttp plugin can be [configured](https://capacitorjs.com/docs/apis/http#configuration) to monkey patch `fetch`, but this forces blob data to be serialized so there is then no benefit to using the BlobWriter plugin. So don't mess with `fetch`.
+
 ### iOS
 
 Configure `Info.plist` to permit communication with the local BlobWriter server. This step is necessary for Capacitor v4+.
