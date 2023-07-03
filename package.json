@@ -1,6 +1,6 @@
 {
     "name": "capacitor-blob-writer",
-    "version": "1.1.11",
+    "version": "1.1.12",
     "description": "Write javascript Blobs to the filesystem efficiently",
     "keywords": [
         "capacitor",
