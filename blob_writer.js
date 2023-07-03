@@ -123,6 +123,13 @@ function write_blob(options) {
         recursive,
         on_fallback
     } = options;
+    if (
+        !blob
+        || !Number.isSafeInteger(blob.size)
+        || typeof blob.type !== "string"
+    ) {
+        return Promise.reject(new Error("Not a Blob."));
+    }
     if (Capacitor.getPlatform() === "web") {
         return (
             fast_mode
