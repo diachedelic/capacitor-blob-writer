@@ -19,9 +19,11 @@
     "main": "blob_writer.umd.js",
     "module": "blob_writer.js",
     "exports": {
-        ".": "./blob_writer.js",
-        "./package.json": "./package.json",
-        "./definitions.d.ts": "./definitions.d.ts"
+        ".": {
+            "default": "./blob_writer.js",
+            "types": "./definitions.d.ts"
+        },
+        "./package.json": "./package.json"
     },
     "types": "definitions.d.ts",
     "files": [
