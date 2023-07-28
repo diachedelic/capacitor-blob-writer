@@ -20,8 +20,8 @@
     "module": "blob_writer.js",
     "exports": {
         ".": {
-            "default": "./blob_writer.js",
-            "types": "./definitions.d.ts"
+            "types": "./definitions.d.ts",
+            "default": "./blob_writer.js"
         },
         "./package.json": "./package.json"
     },
