@@ -5,11 +5,11 @@
         "watch": "rollup -cw"
     },
     "dependencies": {
-        "@capacitor/android": "^5.0.0",
-        "@capacitor/cli": "^5.0.0",
-        "@capacitor/core": "^5.0.0",
-        "@capacitor/filesystem": "^5.0.0",
-        "@capacitor/ios": "^5.0.0",
+        "@capacitor/android": "6.0.0-rc.0",
+        "@capacitor/cli": "6.0.0-rc.0",
+        "@capacitor/core": "6.0.0-rc.0",
+        "@capacitor/filesystem": "6.0.0-rc.0",
+        "@capacitor/ios": "6.0.0-rc.0",
         "capacitor-blob-writer": "../"
     },
     "devDependencies": {

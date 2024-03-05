@@ -118,6 +118,7 @@ Different versions of the plugin support different versions of Capacitor:
 | v3         | v1     |
 | v4         | v1     |
 | v5         | v1     |
+| v6         | v1     |
 
 Read the documentation for v0.2 [here](https://github.com/diachedelic/capacitor-blob-writer/tree/0.2.x). See the changelog below for breaking changes.
 
@@ -212,6 +213,9 @@ The following benchmarks compare the performance and stability of `Filesystem.wr
 - [1] `DOMException: The serialized keys and/or value are too large`
 
 ## Changelog
+
+### v1.1.15
+- Adds support for Capacitor v6.
 
 ### v1.1.11
 - Works around CapacitorHttp's patching of window.fetch.
