@@ -214,6 +214,9 @@ The following benchmarks compare the performance and stability of `Filesystem.wr
 
 ## Changelog
 
+### v1.1.16
+- Avoid breaking SSR.
+
 ### v1.1.15
 - Adds support for Capacitor v6.
 
