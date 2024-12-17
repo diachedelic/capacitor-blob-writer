@@ -21,8 +21,8 @@
     "exports": {
         ".": {
             "types": "./definitions.d.ts",
-            "default": "./blob_writer.js",
-            "require": "./blob_writer.umd.js"
+            "require": "./blob_writer.umd.js",
+            "default": "./blob_writer.js"
         },
         "./package.json": "./package.json"
     },
