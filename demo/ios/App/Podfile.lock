@@ -1,11 +1,11 @@
 PODS:
-  - Capacitor (6.0.0-rc.0):
+  - Capacitor (7.2.0):
     - CapacitorCordova
   - CapacitorBlobWriter (0.0.1):
     - Capacitor
     - GCDWebServer (~> 3.0)
-  - CapacitorCordova (6.0.0-rc.0)
-  - CapacitorFilesystem (6.0.0-rc.0):
+  - CapacitorCordova (7.2.0)
+  - CapacitorFilesystem (7.0.1):
     - Capacitor
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
@@ -32,12 +32,12 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/filesystem"
 
 SPEC CHECKSUMS:
-  Capacitor: c5b8b4e73032b078db259f1bbe71afd09fd84250
-  CapacitorBlobWriter: 110eeaf80611f19bf01a8a05ff3672149ed0baad
-  CapacitorCordova: e8930c71b1bf90e793253f3057b3354a88ed83b3
-  CapacitorFilesystem: bdaae310d07dfdf0c0c0632746e03ba9648623ee
+  Capacitor: 03bc7cbdde6a629a8b910a9d7d78c3cc7ed09ea7
+  CapacitorBlobWriter: ea147e9d147c90db43b93c24a5af38b8986d65fa
+  CapacitorCordova: 5967b9ba03915ef1d585469d6e31f31dc49be96f
+  CapacitorFilesystem: e6261c410436f54908c11f94336c5b58286b1db0
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
 
 PODFILE CHECKSUM: 0d60206ee4283d9cd83cbdccc02b4cab4ad80b35
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.16.2

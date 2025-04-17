@@ -119,6 +119,7 @@ Different versions of the plugin support different versions of Capacitor:
 | v4         | v1     |
 | v5         | v1     |
 | v6         | v1     |
+| v7         | v7     |
 
 Read the documentation for v0.2 [here](https://github.com/diachedelic/capacitor-blob-writer/tree/0.2.x). See the changelog below for breaking changes.
 
@@ -213,6 +214,10 @@ The following benchmarks compare the performance and stability of `Filesystem.wr
 - [1] `DOMException: The serialized keys and/or value are too large`
 
 ## Changelog
+
+### v7.0.0
+- Adds support for Capacitor v7.
+- BREAKING: Support for Capacitor v6, and hence iOS v13, has been dropped.
 
 ### v1.1.16
 - Avoid breaking SSR.
