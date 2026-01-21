@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BlobWriterExample</string>
+    <string name="title_activity_main">BlobWriterExample</string>
+    <string name="package_name">com.capacitor.blobwriter</string>
+    <string name="custom_url_scheme">com.capacitor.blobwriter</string>
+</resources>

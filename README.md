@@ -169,7 +169,7 @@ There is no fallback mode on the web platform, because it is unnecessary.
 - no `append` option yet (see #11)
 
 ## Benchmarks
-The following benchmarks compare the performance and stability of `Filesystem.writeFile` with `write_blob`. See `demo/src/index.ts` for more details.
+The following benchmarks compare the performance and stability of `Filesystem.writeFile` with `write_blob`. See `example/src/main.js` for more details.
 
 ### Android (Samsung A5)
 
@@ -213,6 +213,10 @@ The following benchmarks compare the performance and stability of `Filesystem.wr
 - [1] `DOMException: The serialized keys and/or value are too large`
 
 ## Changelog
+
+### v1.1.20
+- Adds support for Capacitor v8.
+- Adds support for Swift Package Manager (SPM).
 
 ### v1.1.16
 - Avoid breaking SSR.

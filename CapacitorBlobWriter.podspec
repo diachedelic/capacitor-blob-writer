@@ -1,5 +1,4 @@
-
-  Pod::Spec.new do |s|
+Pod::Spec.new do |s|
     s.name = 'CapacitorBlobWriter'
     s.version = '0.0.1'
     s.summary = 'Write javascript Blobs to the filesystem efficiently'
@@ -11,4 +10,4 @@
     s.ios.deployment_target  = '12.0'
     s.dependency 'Capacitor'
     s.dependency 'GCDWebServer', '~> 3.0'
-  end
+end

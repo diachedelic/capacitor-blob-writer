@@ -28,18 +28,18 @@
     },
     "types": "definitions.d.ts",
     "files": [
+        "CapacitorBlobWriter.podspec",
+        "Package.swift",
+        "android/build.gradle",
+        "android/gradle.properties",
+        "android/gradle/wrapper/gradle-wrapper.properties",
+        "android/proguard-rules.pro",
+        "android/settings.gradle",
+        "android/src/main/",
         "blob_writer.*",
         "definitions.d.ts",
-        "android/build.gradle",
-        "android/settings.gradle",
-        "android/gradle/wrapper/gradle-wrapper.properties",
-        "android/gradle.properties",
-        "android/proguard-rules.pro",
-        "android/src/main/",
-        "ios/Plugin/Plugin.*",
-        "ios/Podfile*",
-        "ios/Plugin/Info.plist",
-        "CapacitorBlobWriter.podspec"
+        "ios/Plugin/",
+        "ios/Podfile*"
     ],
     "scripts": {
         "build": "rollup -c",

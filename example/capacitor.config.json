@@ -1,0 +1,5 @@
+{
+  "appId": "com.capacitor.blobwriter",
+  "appName": "BlobWriterExample",
+  "webDir": "dist"
+}
