@@ -13,7 +13,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/ionic-team/capacitor-swift-pm.git",
-            from: "8.0.0"
+            "7.0.0"..<"99.0.0"
         ),
         .package(
             url: "https://github.com/ubiregiinc/GCDWebServer.git",
